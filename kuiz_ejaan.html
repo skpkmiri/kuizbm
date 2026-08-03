@@ -2,7 +2,6 @@
 <html lang="ms">
 <head>
   <meta charset="UTF-8">
-  <!-- Meta viewport ini sangat penting untuk halang ZOOM di Smartboard/Tablet -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>KUIZ EJAAN</title>
   
@@ -48,26 +47,27 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background-color: #0f172a; /* Warna latar belakang luar */
+      background-color: #0f172a; 
       touch-action: none;
       user-select: none;
       -webkit-user-select: none;
     }
 
-    /* Memaksa paparan Smartboard kekal 16:9 walau di skrin mana ia dibuka */
+    /* Memaksa paparan muat-muat dengan skrin Smartboard (Dynamic Viewport) */
     .fit-16-9 {
       width: 100vw;
-      height: 56.25vw; /* 9/16 * 100 */
-      max-height: 100vh;
-      max-width: 177.78vh; /* 16/9 * 100 */
+      height: 100vh;
+      height: 100dvh; /* Automatik tolak saiz URL bar Chrome */
+      max-height: 100dvh;
+      overflow: hidden;
       margin: auto;
       position: relative;
     }
 
-    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; }
     .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #fde047; border-radius: 10px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #facc15; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     
     @keyframes spin-slow {
       from { transform: rotate(0deg); }
@@ -205,7 +205,7 @@
 
       // Pointer event wrapper untuk jadikan sentuhan super pantas
       const withInstantTouch = (callback) => (e) => {
-        e.preventDefault(); // Menghalang kelewatan sentuhan pelayar dan zoom
+        e.preventDefault(); 
         e.stopPropagation();
         callback(e);
       };
@@ -252,6 +252,7 @@
         if (musicOn) window.bgMusic.play();
       };
 
+      // Disambung ke muka utama pelayar (index.html)
       const goHome = () => {
         window.location.href = 'index.html';
       };
@@ -315,7 +316,7 @@
               feedback: null
             };
           });
-        }, 2000); // Masa dipercepatkan sedikit untuk game pacing yang baik
+        }, 2000); 
       };
 
       const renderKeyboard = (player, accentColor) => {
@@ -326,10 +327,10 @@
         const row2 = ['A','S','D','F','G','H','J','K','L'];
         const row3 = ['Z','X','C','V','B','N','M'];
 
-        const btnClass = `bg-white border-4 border-slate-200 text-slate-700 font-black text-xl lg:text-2xl rounded-xl w-8 h-10 lg:w-12 lg:h-12 flex items-center justify-center shadow-[0_4px_0_0_rgba(226,232,240,1)] active:shadow-none active:translate-y-1 transition-all hover:bg-${accentColor}-50 hover:border-${accentColor}-300 disabled:opacity-50 touch-manipulation`;
+        const btnClass = `bg-white border-2 border-slate-200 text-slate-700 font-black text-lg lg:text-2xl rounded-lg lg:rounded-xl w-7 h-9 lg:w-11 lg:h-12 flex items-center justify-center shadow-sm active:shadow-none active:translate-y-1 transition-all hover:bg-${accentColor}-50 hover:border-${accentColor}-300 disabled:opacity-50 touch-manipulation`;
 
         return (
-          <div className="w-full flex flex-col gap-1 lg:gap-2 select-none">
+          <div className="w-full flex flex-col gap-1 select-none">
             <div className="flex justify-center gap-1">
               {row1.map(k => (
                 <button key={k} type="button" disabled={isDisabled} onPointerDown={withInstantTouch(() => handleKeyPress(player, k))} className={btnClass}>{k}</button>
@@ -344,7 +345,7 @@
               {row3.map(k => (
                 <button key={k} type="button" disabled={isDisabled} onPointerDown={withInstantTouch(() => handleKeyPress(player, k))} className={btnClass}>{k}</button>
               ))}
-              <button type="button" disabled={isDisabled} onPointerDown={withInstantTouch(() => handleKeyPress(player, 'PADAM'))} className="bg-red-100 border-4 border-red-200 text-red-600 font-black rounded-xl px-2 h-10 lg:h-12 flex items-center justify-center shadow-[0_4px_0_0_rgba(254,202,202,1)] active:shadow-none active:translate-y-1 transition-all hover:bg-red-200 disabled:opacity-50 touch-manipulation">
+              <button type="button" disabled={isDisabled} onPointerDown={withInstantTouch(() => handleKeyPress(player, 'PADAM'))} className="bg-red-100 border-2 border-red-200 text-red-600 font-black rounded-lg lg:rounded-xl px-2 h-9 lg:h-12 flex items-center justify-center shadow-sm active:shadow-none active:translate-y-1 transition-all hover:bg-red-200 disabled:opacity-50 touch-manipulation">
                 <Icon d={ICONS.delete} className="w-5 h-5 lg:w-6 lg:h-6" />
               </button>
             </div>
@@ -359,12 +360,12 @@
         if (timeLeft <= 5) barColor = 'bg-red-500';
         
         return (
-          <div className="flex items-center gap-2 mb-2 bg-white/50 p-2 lg:p-2 rounded-full border-2 border-white w-full">
+          <div className="flex items-center gap-2 mb-1 lg:mb-2 bg-white/50 p-1 lg:p-2 rounded-full border border-white w-full">
             <Icon d={ICONS.hourglass} className={`w-5 h-5 lg:w-6 lg:h-6 ${timeLeft <= 10 ? 'text-red-500 animate-spin' : `text-${colorTheme}-500`}`} />
-            <div className="flex-1 bg-white h-4 lg:h-6 rounded-full overflow-hidden shadow-inner border-2 border-slate-200">
+            <div className="flex-1 bg-white h-3 lg:h-4 rounded-full overflow-hidden shadow-inner border border-slate-200">
               <div className={`h-full transition-all duration-1000 ease-linear ${barColor}`} style={{ width: `${timerPercentage}%` }} />
             </div>
-            <span className="font-black text-slate-700 w-10 lg:w-12 text-center text-sm lg:text-base">{timeLeft}s</span>
+            <span className="font-black text-slate-700 w-8 lg:w-12 text-center text-xs lg:text-sm">{timeLeft}s</span>
           </div>
         );
       };
@@ -376,19 +377,19 @@
       const sortedStudents = [...students].sort((a, b) => b.score - a.score);
 
       return (
-        <div className="fit-16-9 bg-gradient-to-br from-cyan-300 via-pink-300 to-purple-400 text-slate-800 p-2 lg:p-4 flex flex-col overflow-hidden shadow-2xl rounded-2xl ring-4 ring-white/50">
+        <div className="fit-16-9 bg-gradient-to-br from-cyan-300 via-pink-300 to-purple-400 text-slate-800 p-2 flex flex-col overflow-hidden">
           
-          <header className="w-full flex justify-between items-center mb-2 bg-white/90 backdrop-blur-md p-2 lg:p-3 rounded-3xl border-4 border-white relative shrink-0">
+          <header className="w-full flex justify-between items-center mb-2 bg-white/90 backdrop-blur-md p-2 lg:p-3 rounded-2xl border-2 border-white relative shrink-0 shadow-sm">
             <div className="flex items-center gap-2">
               <button 
                 onPointerDown={withInstantTouch(goHome)} 
-                className="bg-sky-100 hover:bg-sky-200 text-sky-600 p-2 rounded-2xl transition transform active:scale-95 flex items-center justify-center border-4 border-sky-300 shadow-sm touch-manipulation"
+                className="bg-sky-100 hover:bg-sky-200 text-sky-600 p-2 rounded-xl transition transform active:scale-95 flex items-center justify-center border-2 border-sky-300 touch-manipulation"
               >
                 <Icon d={ICONS.home} className="w-5 h-5 lg:w-6 lg:h-6" />
               </button>
               <button 
                 onPointerDown={withInstantTouch(toggleMusic)}
-                className="bg-purple-100 hover:bg-purple-200 text-purple-600 p-2 rounded-2xl border-4 border-purple-300 shadow-sm transition touch-manipulation"
+                className="bg-purple-100 hover:bg-purple-200 text-purple-600 p-2 rounded-xl border-2 border-purple-300 transition touch-manipulation"
               >
                 <Icon d={musicOn ? ICONS.volOn : ICONS.volOff} className="w-5 h-5 lg:w-6 lg:h-6" />
               </button>
@@ -402,25 +403,25 @@
             <div className="w-16"></div>
           </header>
 
-          <div className="flex-1 w-full flex flex-row gap-2 lg:gap-3 overflow-hidden">
+          <div className="flex-1 w-full flex flex-row gap-2 overflow-hidden min-h-0">
             
             {gameState === 'start' && (
-              <div className="w-full bg-white/95 rounded-[3rem] shadow-[0_12px_0_0_rgba(0,0,0,0.1)] border-8 border-white h-full flex flex-col justify-center items-center p-8 lg:p-12 text-center">
-                <div className="flex gap-4 mb-4 animate-bounce select-none pointer-events-none">
-                  <span className="text-[80px] lg:text-[100px]">👦</span>
-                  <span className="text-[80px] lg:text-[100px]">👧</span>
+              <div className="w-full bg-white/95 rounded-[2rem] border-4 border-white h-full flex flex-col justify-center items-center p-6 text-center overflow-y-auto">
+                <div className="flex gap-4 mb-2 animate-bounce select-none pointer-events-none">
+                  <span className="text-[60px] lg:text-[80px]">👦</span>
+                  <span className="text-[60px] lg:text-[80px]">👧</span>
                 </div>
-                <h2 className="text-4xl lg:text-5xl font-black mb-4 text-purple-600">Selamat Datang!</h2>
-                <p className="text-xl lg:text-2xl text-slate-600 mb-8 max-w-3xl font-bold leading-relaxed">
+                <h2 className="text-3xl lg:text-5xl font-black mb-4 text-purple-600">Selamat Datang!</h2>
+                <p className="text-lg lg:text-2xl text-slate-600 mb-6 max-w-2xl font-bold leading-relaxed">
                   Kumpulan Kiri: <span className="text-blue-500">Shakeel, Athena, Alex</span><br/>
                   Kumpulan Kanan: <span className="text-pink-500">Aiman, Zaim, Natalie</span><br/>
                   Masa: <span className="text-red-500">15 MINIT</span> (Tepat 60 saat/soalan).
                 </p>
                 <button 
                   onPointerDown={withInstantTouch(startGame)}
-                  className="bg-green-500 text-white text-2xl lg:text-3xl font-black py-5 px-14 rounded-full shadow-[0_8px_0_0_rgba(21,128,61,1)] active:shadow-none active:translate-y-2 transform transition flex items-center gap-4 border-4 border-green-300 touch-manipulation"
+                  className="bg-green-500 text-white text-xl lg:text-3xl font-black py-4 px-10 rounded-full shadow-[0_6px_0_0_rgba(21,128,61,1)] active:shadow-none active:translate-y-1 transform transition flex items-center gap-3 border-4 border-green-300 touch-manipulation"
                 >
-                  <Icon d={ICONS.play} className="w-8 h-8 lg:w-10 lg:h-10 fill-current" />
+                  <Icon d={ICONS.play} className="w-6 h-6 lg:w-8 lg:h-8 fill-current" />
                   MULA SEKARANG!
                 </button>
               </div>
@@ -429,64 +430,71 @@
             {gameState === 'playing' && (
               <>
                 {/* ----------------- PLAYER 1 ZONE (KIRI) ----------------- */}
-                <div className="w-[40%] bg-blue-50 rounded-[2.5rem] border-8 border-blue-200 relative flex flex-col p-2 lg:p-4 overflow-hidden">
+                <div className="w-[40%] bg-blue-50 rounded-[1.5rem] lg:rounded-[2rem] border-4 lg:border-8 border-blue-200 relative flex flex-col p-2 overflow-hidden min-h-0">
                   {p1State.isFinished ? (
                     <div className="flex-1 flex flex-col items-center justify-center text-center animate-pulse">
-                      <div className="bg-blue-100 p-8 rounded-full mb-6"><Icon d={ICONS.check} className="w-24 h-24 text-blue-500" /></div>
-                      <h2 className="text-5xl font-black text-blue-600 mb-4">HEBAT!</h2>
-                      <p className="text-2xl font-bold text-slate-500">Menunggu rakan di sebelah...</p>
+                      <div className="bg-blue-100 p-6 rounded-full mb-4"><Icon d={ICONS.check} className="w-16 h-16 lg:w-20 lg:h-20 text-blue-500" /></div>
+                      <h2 className="text-3xl lg:text-4xl font-black text-blue-600 mb-2">HEBAT!</h2>
+                      <p className="text-lg lg:text-xl font-bold text-slate-500">Menunggu rakan di sebelah...</p>
                     </div>
                   ) : (
                     <>
-                      {p1State.feedback && (
-                        <div className={`absolute inset-0 z-50 flex flex-col items-center justify-center backdrop-blur-sm bg-white/95 ${p1State.feedback === 'correct' ? 'text-green-500' : 'text-red-500'}`}>
-                          {p1State.feedback === 'correct' ? (
-                            <>
-                              <div className="bg-green-100 p-6 rounded-full mb-4 animate-bounce"><Icon d={ICONS.check} className="w-24 h-24" /></div>
-                              <h2 className="text-5xl font-black mb-2">PANDAI!</h2>
-                              <p className="text-2xl font-bold bg-green-500 text-white px-6 py-2 rounded-full">+2 Markah</p>
-                            </>
-                          ) : p1State.feedback === 'timeout' ? (
-                            <>
-                              <div className="bg-orange-100 p-6 rounded-full mb-4"><Icon d={ICONS.clock} className="w-24 h-24 text-orange-500" /></div>
-                              <h2 className="text-5xl font-black mb-2 text-orange-500">MASA TAMAT!</h2>
-                              <p className="text-2xl font-bold text-slate-700">Jawapan: <span className="text-blue-600 text-4xl">{word1.word}</span></p>
-                            </>
-                          ) : (
-                            <>
-                              <div className="bg-red-100 p-6 rounded-full mb-4"><Icon d={ICONS.x} className="w-24 h-24" /></div>
-                              <h2 className="text-5xl font-black mb-2">CUBA LAGI!</h2>
-                              <p className="text-2xl font-bold text-slate-700">Jawapan: <span className="text-blue-600 text-4xl">{word1.word}</span></p>
-                            </>
-                          )}
-                        </div>
-                      )}
+                      {/* Flex-1 Scrollable Area: Segala benda DITOLAK masuk sini supaya butang HANTAR kekal di bawah */}
+                      <div className="flex-1 w-full flex flex-col min-h-0 overflow-y-auto overflow-x-hidden custom-scrollbar pr-1 pb-1">
+                        
+                        {p1State.feedback && (
+                          <div className={`absolute inset-0 z-50 flex flex-col items-center justify-center backdrop-blur-sm bg-white/95 ${p1State.feedback === 'correct' ? 'text-green-500' : 'text-red-500'}`}>
+                            {p1State.feedback === 'correct' ? (
+                              <>
+                                <div className="bg-green-100 p-4 lg:p-6 rounded-full mb-2 lg:mb-4 animate-bounce"><Icon d={ICONS.check} className="w-16 h-16 lg:w-24 lg:h-24" /></div>
+                                <h2 className="text-4xl lg:text-5xl font-black mb-2">PANDAI!</h2>
+                                <p className="text-xl lg:text-2xl font-bold bg-green-500 text-white px-4 lg:px-6 py-1 lg:py-2 rounded-full">+2 Markah</p>
+                              </>
+                            ) : p1State.feedback === 'timeout' ? (
+                              <>
+                                <div className="bg-orange-100 p-4 lg:p-6 rounded-full mb-2 lg:mb-4"><Icon d={ICONS.clock} className="w-16 h-16 lg:w-24 lg:h-24 text-orange-500" /></div>
+                                <h2 className="text-3xl lg:text-5xl font-black mb-2 text-orange-500">MASA TAMAT!</h2>
+                                <p className="text-xl lg:text-2xl font-bold text-slate-700">Jawapan: <span className="text-blue-600 text-3xl lg:text-4xl">{word1.word}</span></p>
+                              </>
+                            ) : (
+                              <>
+                                <div className="bg-red-100 p-4 lg:p-6 rounded-full mb-2 lg:mb-4"><Icon d={ICONS.x} className="w-16 h-16 lg:w-24 lg:h-24" /></div>
+                                <h2 className="text-3xl lg:text-5xl font-black mb-2">CUBA LAGI!</h2>
+                                <p className="text-xl lg:text-2xl font-bold text-slate-700">Jawapan: <span className="text-blue-600 text-3xl lg:text-4xl">{word1.word}</span></p>
+                              </>
+                            )}
+                          </div>
+                        )}
 
-                      {renderTimerBar(p1State.timeLeft, 'blue')}
+                        {renderTimerBar(p1State.timeLeft, 'blue')}
 
-                      <div className="flex-1 flex flex-col items-center justify-start">
                         <div className="w-full flex justify-between items-center mb-1 gap-1">
-                           <span className="bg-blue-200 text-blue-800 px-3 py-1 rounded-xl font-bold whitespace-nowrap shadow-sm text-sm lg:text-base">S: {p1State.wordIdx + 1}/15</span>
-                           <div className="bg-blue-600 text-white px-4 py-1 rounded-2xl font-black text-lg lg:text-xl flex-1 text-center shadow-sm">{activeStudent1.name}</div>
+                           <span className="bg-blue-200 text-blue-800 px-2 lg:px-3 py-1 rounded-xl font-bold whitespace-nowrap shadow-sm text-xs lg:text-sm">S: {p1State.wordIdx + 1}/15</span>
+                           <div className="bg-blue-600 text-white px-3 lg:px-4 py-1 rounded-xl font-black text-base lg:text-xl flex-1 text-center shadow-sm truncate">{activeStudent1.name}</div>
                         </div>
                         
-                        <div className="bg-white border-4 border-dashed border-blue-300 rounded-[1.5rem] p-2 my-1 lg:my-2 inline-block shadow-lg pointer-events-none">
-                          <div className="text-[50px] lg:text-[70px] leading-none drop-shadow-xl">{word1.emoji}</div>
+                        <div className="flex justify-center my-1 lg:my-2 w-full">
+                          <div className="bg-white border-2 lg:border-4 border-dashed border-blue-300 rounded-[1rem] p-2 inline-block shadow-sm pointer-events-none">
+                            <div className="text-[50px] lg:text-[60px] leading-none drop-shadow-xl">{word1.emoji}</div>
+                          </div>
                         </div>
 
-                        <button onPointerDown={withInstantTouch(() => speakWord(word1.word))} className="bg-cyan-400 text-cyan-950 px-4 py-2 rounded-full text-sm lg:text-lg font-black shadow-[0_4px_0_0_rgba(6,182,212,1)] active:translate-y-1 mb-2 flex items-center gap-2 border-2 border-cyan-200 touch-manipulation">
-                          <Icon d={ICONS.volOn} className="w-4 h-4 lg:w-5 lg:h-5" /> DENGAR
-                        </button>
+                        <div className="flex justify-center mb-1 w-full">
+                          <button onPointerDown={withInstantTouch(() => speakWord(word1.word))} className="bg-cyan-400 text-cyan-950 px-4 py-1 lg:py-2 rounded-full text-sm lg:text-base font-black shadow-[0_3px_0_0_rgba(6,182,212,1)] active:translate-y-1 flex items-center gap-1 lg:gap-2 border-2 border-cyan-200 touch-manipulation">
+                            <Icon d={ICONS.volOn} className="w-4 h-4 lg:w-5 lg:h-5" /> DENGAR
+                          </button>
+                        </div>
 
-                        <input type="text" value={p1State.input} readOnly placeholder="EJA..." className="w-full text-center text-2xl lg:text-3xl font-black py-2 rounded-xl border-4 border-blue-300 outline-none mb-2 uppercase tracking-[0.2em] text-slate-700 shadow-inner bg-white pointer-events-none" />
+                        <input type="text" value={p1State.input} readOnly placeholder="EJA..." className="w-full text-center text-xl lg:text-3xl font-black py-1 lg:py-2 rounded-xl border-2 lg:border-4 border-blue-300 outline-none mb-1 lg:mb-2 uppercase tracking-[0.2em] text-slate-700 shadow-inner bg-white pointer-events-none" />
 
                         {renderKeyboard('p1', 'blue')}
                       </div>
 
+                      {/* Butang HANTAR dikunci di bawah luar dari Scroll Area */}
                       <button 
                         onPointerDown={withInstantTouch(() => { if(p1State.input.trim() && !p1State.feedback) handleAnswer('p1'); })}
                         disabled={!p1State.input.trim() || p1State.feedback !== null}
-                        className="mt-2 w-full bg-green-500 disabled:bg-slate-300 text-white text-xl lg:text-2xl font-black py-2 lg:py-3 rounded-xl shadow-[0_6px_0_0_rgba(21,128,61,1)] active:shadow-none active:translate-y-1 disabled:shadow-none transition-all touch-manipulation"
+                        className="mt-2 w-full bg-green-500 disabled:bg-slate-300 text-white text-lg lg:text-2xl font-black py-2 lg:py-3 rounded-xl shadow-[0_4px_0_0_rgba(21,128,61,1)] active:shadow-none active:translate-y-1 disabled:shadow-none transition-all touch-manipulation shrink-0"
                       >
                         HANTAR
                       </button>
@@ -495,82 +503,89 @@
                 </div>
 
                 {/* ----------------- SCOREBOARD ZONE (TENGAH) ----------------- */}
-                <div className="w-[20%] bg-yellow-50 rounded-[2.5rem] border-8 border-yellow-300 p-2 lg:p-4 flex flex-col items-center">
-                  <h2 className="text-lg lg:text-2xl font-black text-amber-700 mb-2 flex flex-col items-center gap-1 text-center w-full pb-2 border-b-4 border-yellow-200">
-                    <Icon d={ICONS.trophy} className="w-6 h-6 lg:w-8 lg:h-8 text-yellow-500" />
+                <div className="w-[20%] bg-yellow-50 rounded-[1.5rem] lg:rounded-[2rem] border-4 lg:border-8 border-yellow-300 p-2 flex flex-col items-center min-h-0">
+                  <h2 className="text-base lg:text-xl font-black text-amber-700 mb-2 flex flex-col items-center gap-1 text-center w-full pb-2 border-b-2 border-yellow-200">
+                    <Icon d={ICONS.trophy} className="w-5 h-5 lg:w-8 lg:h-8 text-yellow-500" />
                     MARKAH
                   </h2>
                   
-                  <div className="flex-1 w-full flex flex-col gap-2 overflow-y-auto custom-scrollbar pr-1">
+                  <div className="flex-1 w-full flex flex-col gap-1 lg:gap-2 overflow-y-auto custom-scrollbar pr-1">
                     {sortedStudents.map((student, index) => (
-                      <div key={student.id} className={`bg-white rounded-xl p-2 border-4 flex flex-col items-center text-center transition-all ${(student.id === activeStudent1.id && !p1State.isFinished) || (student.id === activeStudent2.id && !p2State.isFinished) ? 'border-orange-400 bg-orange-50 scale-[1.02]' : 'border-yellow-100'}`}>
-                        <div className={`w-5 h-5 lg:w-6 lg:h-6 rounded-full flex items-center justify-center font-black text-white mb-1 text-xs lg:text-sm ${index === 0 ? 'bg-yellow-400' : index === 1 ? 'bg-slate-400' : index === 2 ? 'bg-amber-600' : 'bg-slate-200'}`}>{index + 1}</div>
-                        <span className="font-bold text-xs lg:text-sm text-slate-700 leading-tight">{student.name}</span>
-                        <span className="font-black text-lg lg:text-xl text-orange-600">{student.score}</span>
+                      <div key={student.id} className={`bg-white rounded-xl p-1 lg:p-2 border-2 flex flex-col items-center text-center transition-all ${(student.id === activeStudent1.id && !p1State.isFinished) || (student.id === activeStudent2.id && !p2State.isFinished) ? 'border-orange-400 bg-orange-50 scale-[1.02]' : 'border-yellow-100'}`}>
+                        <div className={`w-4 h-4 lg:w-6 lg:h-6 rounded-full flex items-center justify-center font-black text-white mb-1 text-[10px] lg:text-sm ${index === 0 ? 'bg-yellow-400' : index === 1 ? 'bg-slate-400' : index === 2 ? 'bg-amber-600' : 'bg-slate-200'}`}>{index + 1}</div>
+                        <span className="font-bold text-[10px] lg:text-sm text-slate-700 leading-tight">{student.name}</span>
+                        <span className="font-black text-base lg:text-xl text-orange-600">{student.score}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
                 {/* ----------------- PLAYER 2 ZONE (KANAN) ----------------- */}
-                <div className="w-[40%] bg-pink-50 rounded-[2.5rem] border-8 border-pink-200 relative flex flex-col p-2 lg:p-4 overflow-hidden">
+                <div className="w-[40%] bg-pink-50 rounded-[1.5rem] lg:rounded-[2rem] border-4 lg:border-8 border-pink-200 relative flex flex-col p-2 overflow-hidden min-h-0">
                   {p2State.isFinished ? (
                     <div className="flex-1 flex flex-col items-center justify-center text-center animate-pulse">
-                      <div className="bg-pink-100 p-8 rounded-full mb-6"><Icon d={ICONS.check} className="w-24 h-24 text-pink-500" /></div>
-                      <h2 className="text-5xl font-black text-pink-600 mb-4">HEBAT!</h2>
-                      <p className="text-2xl font-bold text-slate-500">Menunggu rakan di sebelah...</p>
+                      <div className="bg-pink-100 p-6 rounded-full mb-4"><Icon d={ICONS.check} className="w-16 h-16 lg:w-20 lg:h-20 text-pink-500" /></div>
+                      <h2 className="text-3xl lg:text-4xl font-black text-pink-600 mb-2">HEBAT!</h2>
+                      <p className="text-lg lg:text-xl font-bold text-slate-500">Menunggu rakan di sebelah...</p>
                     </div>
                   ) : (
                     <>
-                      {p2State.feedback && (
-                        <div className={`absolute inset-0 z-50 flex flex-col items-center justify-center backdrop-blur-sm bg-white/95 ${p2State.feedback === 'correct' ? 'text-green-500' : 'text-red-500'}`}>
-                          {p2State.feedback === 'correct' ? (
-                            <>
-                              <div className="bg-green-100 p-6 rounded-full mb-4 animate-bounce"><Icon d={ICONS.check} className="w-24 h-24" /></div>
-                              <h2 className="text-5xl font-black mb-2">PANDAI!</h2>
-                              <p className="text-2xl font-bold bg-green-500 text-white px-6 py-2 rounded-full">+2 Markah</p>
-                            </>
-                          ) : p2State.feedback === 'timeout' ? (
-                            <>
-                              <div className="bg-orange-100 p-6 rounded-full mb-4"><Icon d={ICONS.clock} className="w-24 h-24 text-orange-500" /></div>
-                              <h2 className="text-5xl font-black mb-2 text-orange-500">MASA TAMAT!</h2>
-                              <p className="text-2xl font-bold text-slate-700">Jawapan: <span className="text-pink-600 text-4xl">{word2.word}</span></p>
-                            </>
-                          ) : (
-                            <>
-                              <div className="bg-red-100 p-6 rounded-full mb-4"><Icon d={ICONS.x} className="w-24 h-24" /></div>
-                              <h2 className="text-5xl font-black mb-2">CUBA LAGI!</h2>
-                              <p className="text-2xl font-bold text-slate-700">Jawapan: <span className="text-pink-600 text-4xl">{word2.word}</span></p>
-                            </>
-                          )}
-                        </div>
-                      )}
+                      {/* Flex-1 Scrollable Area */}
+                      <div className="flex-1 w-full flex flex-col min-h-0 overflow-y-auto overflow-x-hidden custom-scrollbar pr-1 pb-1">
+                        
+                        {p2State.feedback && (
+                          <div className={`absolute inset-0 z-50 flex flex-col items-center justify-center backdrop-blur-sm bg-white/95 ${p2State.feedback === 'correct' ? 'text-green-500' : 'text-red-500'}`}>
+                            {p2State.feedback === 'correct' ? (
+                              <>
+                                <div className="bg-green-100 p-4 lg:p-6 rounded-full mb-2 lg:mb-4 animate-bounce"><Icon d={ICONS.check} className="w-16 h-16 lg:w-24 lg:h-24" /></div>
+                                <h2 className="text-4xl lg:text-5xl font-black mb-2">PANDAI!</h2>
+                                <p className="text-xl lg:text-2xl font-bold bg-green-500 text-white px-4 lg:px-6 py-1 lg:py-2 rounded-full">+2 Markah</p>
+                              </>
+                            ) : p2State.feedback === 'timeout' ? (
+                              <>
+                                <div className="bg-orange-100 p-4 lg:p-6 rounded-full mb-2 lg:mb-4"><Icon d={ICONS.clock} className="w-16 h-16 lg:w-24 lg:h-24 text-orange-500" /></div>
+                                <h2 className="text-3xl lg:text-5xl font-black mb-2 text-orange-500">MASA TAMAT!</h2>
+                                <p className="text-xl lg:text-2xl font-bold text-slate-700">Jawapan: <span className="text-pink-600 text-3xl lg:text-4xl">{word2.word}</span></p>
+                              </>
+                            ) : (
+                              <>
+                                <div className="bg-red-100 p-4 lg:p-6 rounded-full mb-2 lg:mb-4"><Icon d={ICONS.x} className="w-16 h-16 lg:w-24 lg:h-24" /></div>
+                                <h2 className="text-3xl lg:text-5xl font-black mb-2">CUBA LAGI!</h2>
+                                <p className="text-xl lg:text-2xl font-bold text-slate-700">Jawapan: <span className="text-pink-600 text-3xl lg:text-4xl">{word2.word}</span></p>
+                              </>
+                            )}
+                          </div>
+                        )}
 
-                      {renderTimerBar(p2State.timeLeft, 'pink')}
+                        {renderTimerBar(p2State.timeLeft, 'pink')}
 
-                      <div className="flex-1 flex flex-col items-center justify-start">
                         <div className="w-full flex justify-between items-center mb-1 gap-1">
-                           <span className="bg-pink-200 text-pink-800 px-3 py-1 rounded-xl font-bold whitespace-nowrap shadow-sm text-sm lg:text-base">S: {p2State.wordIdx + 1}/15</span>
-                           <div className="bg-pink-500 text-white px-4 py-1 rounded-2xl font-black text-lg lg:text-xl flex-1 text-center shadow-sm">{activeStudent2.name}</div>
+                           <span className="bg-pink-200 text-pink-800 px-2 lg:px-3 py-1 rounded-xl font-bold whitespace-nowrap shadow-sm text-xs lg:text-sm">S: {p2State.wordIdx + 1}/15</span>
+                           <div className="bg-pink-500 text-white px-3 lg:px-4 py-1 rounded-xl font-black text-base lg:text-xl flex-1 text-center shadow-sm truncate">{activeStudent2.name}</div>
                         </div>
                         
-                        <div className="bg-white border-4 border-dashed border-pink-300 rounded-[1.5rem] p-2 my-1 lg:my-2 inline-block shadow-lg pointer-events-none">
-                          <div className="text-[50px] lg:text-[70px] leading-none drop-shadow-xl">{word2.emoji}</div>
+                        <div className="flex justify-center my-1 lg:my-2 w-full">
+                          <div className="bg-white border-2 lg:border-4 border-dashed border-pink-300 rounded-[1rem] p-2 inline-block shadow-sm pointer-events-none">
+                            <div className="text-[50px] lg:text-[60px] leading-none drop-shadow-xl">{word2.emoji}</div>
+                          </div>
                         </div>
 
-                        <button onPointerDown={withInstantTouch(() => speakWord(word2.word))} className="bg-cyan-400 text-cyan-950 px-4 py-2 rounded-full text-sm lg:text-lg font-black shadow-[0_4px_0_0_rgba(6,182,212,1)] active:translate-y-1 mb-2 flex items-center gap-2 border-2 border-cyan-200 touch-manipulation">
-                          <Icon d={ICONS.volOn} className="w-4 h-4 lg:w-5 lg:h-5" /> DENGAR
-                        </button>
+                        <div className="flex justify-center mb-1 w-full">
+                          <button onPointerDown={withInstantTouch(() => speakWord(word2.word))} className="bg-cyan-400 text-cyan-950 px-4 py-1 lg:py-2 rounded-full text-sm lg:text-base font-black shadow-[0_3px_0_0_rgba(6,182,212,1)] active:translate-y-1 flex items-center gap-1 lg:gap-2 border-2 border-cyan-200 touch-manipulation">
+                            <Icon d={ICONS.volOn} className="w-4 h-4 lg:w-5 lg:h-5" /> DENGAR
+                          </button>
+                        </div>
 
-                        <input type="text" value={p2State.input} readOnly placeholder="EJA..." className="w-full text-center text-2xl lg:text-3xl font-black py-2 rounded-xl border-4 border-pink-300 outline-none mb-2 uppercase tracking-[0.2em] text-slate-700 shadow-inner bg-white pointer-events-none" />
+                        <input type="text" value={p2State.input} readOnly placeholder="EJA..." className="w-full text-center text-xl lg:text-3xl font-black py-1 lg:py-2 rounded-xl border-2 lg:border-4 border-pink-300 outline-none mb-1 lg:mb-2 uppercase tracking-[0.2em] text-slate-700 shadow-inner bg-white pointer-events-none" />
 
                         {renderKeyboard('p2', 'pink')}
                       </div>
 
+                      {/* Butang HANTAR dikunci di bawah luar dari Scroll Area */}
                       <button 
                         onPointerDown={withInstantTouch(() => { if(p2State.input.trim() && !p2State.feedback) handleAnswer('p2'); })}
                         disabled={!p2State.input.trim() || p2State.feedback !== null}
-                        className="mt-2 w-full bg-green-500 disabled:bg-slate-300 text-white text-xl lg:text-2xl font-black py-2 lg:py-3 rounded-xl shadow-[0_6px_0_0_rgba(21,128,61,1)] active:shadow-none active:translate-y-1 disabled:shadow-none transition-all touch-manipulation"
+                        className="mt-2 w-full bg-green-500 disabled:bg-slate-300 text-white text-lg lg:text-2xl font-black py-2 lg:py-3 rounded-xl shadow-[0_4px_0_0_rgba(21,128,61,1)] active:shadow-none active:translate-y-1 disabled:shadow-none transition-all touch-manipulation shrink-0"
                       >
                         HANTAR
                       </button>
@@ -582,43 +597,43 @@
 
             {/* ----------------- PODIUM SHOWCASE (AKHIR) ----------------- */}
             {gameState === 'ended' && (
-              <div className="w-full bg-white/95 rounded-[3rem] shadow-[0_12px_0_0_rgba(0,0,0,0.1)] border-8 border-white h-full flex flex-col justify-center items-center p-8 lg:p-12 text-center">
+              <div className="w-full bg-white/95 rounded-[2rem] border-4 border-white h-full flex flex-col justify-center items-center p-6 text-center overflow-y-auto">
                 <div className="z-10 flex flex-col items-center w-full max-w-4xl">
                   
-                  <h2 className="text-4xl lg:text-6xl font-black mb-8 text-purple-600 drop-shadow-md">🏆 PENGUMUMAN PEMENANG 🏆</h2>
+                  <h2 className="text-3xl lg:text-5xl font-black mb-6 text-purple-600 drop-shadow-md">🏆 PEMENANG 🏆</h2>
 
-                  <div className="flex justify-center items-end gap-4 lg:gap-8 mb-10 h-64 lg:h-72 w-full">
+                  <div className="flex justify-center items-end gap-2 lg:gap-6 mb-6 h-48 lg:h-64 w-full">
                     <div className="flex flex-col items-center flex-1">
-                      <span className="text-xl lg:text-2xl font-black text-slate-700 mb-2">{sortedStudents[1].name}</span>
-                      <div className="bg-gradient-to-b from-slate-200 to-slate-400 w-full h-32 lg:h-40 rounded-t-3xl border-4 border-slate-300 flex flex-col items-center justify-center shadow-lg relative">
-                        <span className="text-4xl lg:text-6xl font-black text-white">2</span>
-                        <span className="text-sm lg:text-xl font-bold text-slate-800 bg-white/80 px-4 py-1 rounded-full mt-2">{sortedStudents[1].score}m</span>
+                      <span className="text-base lg:text-xl font-black text-slate-700 mb-1">{sortedStudents[1].name}</span>
+                      <div className="bg-gradient-to-b from-slate-200 to-slate-400 w-full h-24 lg:h-32 rounded-t-2xl border-2 border-slate-300 flex flex-col items-center justify-center shadow-lg relative">
+                        <span className="text-3xl lg:text-5xl font-black text-white">2</span>
+                        <span className="text-xs lg:text-base font-bold text-slate-800 bg-white/80 px-2 py-1 rounded-full mt-1">{sortedStudents[1].score}m</span>
                       </div>
                     </div>
 
                     <div className="flex flex-col items-center flex-1">
-                      <div className="bg-yellow-100 p-2 lg:p-3 rounded-full mb-2 animate-bounce">
-                        <Icon d={ICONS.trophy} className="w-10 h-10 lg:w-16 lg:h-16 text-yellow-500 fill-yellow-400" />
+                      <div className="bg-yellow-100 p-1 lg:p-2 rounded-full mb-1 animate-bounce">
+                        <Icon d={ICONS.trophy} className="w-8 h-8 lg:w-12 lg:h-12 text-yellow-500 fill-yellow-400" />
                       </div>
-                      <span className="text-2xl lg:text-3xl font-black text-amber-600 mb-2">{sortedStudents[0].name}</span>
-                      <div className="bg-gradient-to-b from-yellow-300 to-amber-500 w-full h-48 lg:h-56 rounded-t-3xl border-4 border-yellow-200 flex flex-col items-center justify-center shadow-2xl relative z-10">
-                        <span className="text-6xl lg:text-7xl font-black text-white">1</span>
-                        <span className="text-lg lg:text-2xl font-black text-amber-950 bg-white/90 px-6 py-1 rounded-full mt-2">{sortedStudents[0].score}m</span>
+                      <span className="text-xl lg:text-2xl font-black text-amber-600 mb-1">{sortedStudents[0].name}</span>
+                      <div className="bg-gradient-to-b from-yellow-300 to-amber-500 w-full h-36 lg:h-48 rounded-t-2xl border-2 border-yellow-200 flex flex-col items-center justify-center shadow-2xl relative z-10">
+                        <span className="text-5xl lg:text-6xl font-black text-white">1</span>
+                        <span className="text-sm lg:text-xl font-black text-amber-950 bg-white/90 px-3 py-1 rounded-full mt-1">{sortedStudents[0].score}m</span>
                       </div>
                     </div>
 
                     <div className="flex flex-col items-center flex-1">
-                      <span className="text-xl lg:text-2xl font-black text-slate-700 mb-2">{sortedStudents[2].name}</span>
-                      <div className="bg-gradient-to-b from-amber-600 to-amber-800 w-full h-24 lg:h-32 rounded-t-3xl border-4 border-amber-500 flex flex-col items-center justify-center shadow-lg relative">
-                        <span className="text-3xl lg:text-5xl font-black text-white">3</span>
-                        <span className="text-sm lg:text-xl font-bold text-amber-100 bg-amber-950/60 px-3 py-1 rounded-full mt-1">{sortedStudents[2].score}m</span>
+                      <span className="text-base lg:text-xl font-black text-slate-700 mb-1">{sortedStudents[2].name}</span>
+                      <div className="bg-gradient-to-b from-amber-600 to-amber-800 w-full h-16 lg:h-24 rounded-t-2xl border-2 border-amber-500 flex flex-col items-center justify-center shadow-lg relative">
+                        <span className="text-2xl lg:text-4xl font-black text-white">3</span>
+                        <span className="text-[10px] lg:text-sm font-bold text-amber-100 bg-amber-950/60 px-2 py-1 rounded-full mt-1">{sortedStudents[2].score}m</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-2 lg:gap-4 w-full bg-slate-50 p-4 rounded-2xl mb-8 border-2 border-slate-200">
+                  <div className="grid grid-cols-3 gap-2 w-full bg-slate-50 p-2 lg:p-4 rounded-xl mb-4 border-2 border-slate-200">
                     {sortedStudents.slice(3).map((st, i) => (
-                      <div key={st.id} className="flex items-center justify-between bg-white px-2 lg:px-4 py-2 rounded-xl border border-slate-200 font-bold text-slate-600 text-sm lg:text-lg">
+                      <div key={st.id} className="flex items-center justify-between bg-white px-2 py-1 lg:py-2 rounded-lg border border-slate-200 font-bold text-slate-600 text-xs lg:text-base">
                         <span>#{i + 4} {st.name}</span>
                         <span className="text-orange-500 font-black">{st.score}m</span>
                       </div>
@@ -627,9 +642,9 @@
 
                   <button 
                     onPointerDown={withInstantTouch(startGame)}
-                    className="bg-blue-500 text-white text-2xl lg:text-3xl font-black py-5 px-12 rounded-full shadow-[0_8px_0_0_rgba(29,78,216,1)] active:shadow-none active:translate-y-2 flex items-center gap-4 border-4 border-blue-300 touch-manipulation"
+                    className="bg-blue-500 text-white text-xl lg:text-2xl font-black py-3 px-8 rounded-full shadow-[0_4px_0_0_rgba(29,78,216,1)] active:shadow-none active:translate-y-1 flex items-center gap-2 border-2 border-blue-300 touch-manipulation"
                   >
-                    <Icon d={ICONS.rotateCcw} className="w-8 h-8 lg:w-10 lg:h-10" /> MAIN SEMULA
+                    <Icon d={ICONS.rotateCcw} className="w-6 h-6 lg:w-8 lg:h-8" /> MAIN SEMULA
                   </button>
                 </div>
               </div>
