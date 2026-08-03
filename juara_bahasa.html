@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Juara Bahasa - SK Pendidikan Khas Miri</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- React & ReactDOM -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  
+  <!-- Babel untuk menterjemah JSX dalam HTML -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Firebase Compat (Sesuai untuk HTML Standalone) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+
+  <style>
+    /* Animasi Tersuai */
+    @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+    .animate-fade-in { animation: fade-in 0.3s ease-out; }
+    
+    @keyframes fade-in-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-fade-in-up { animation: fade-in-up 0.3s ease-out; }
+
+    /* Halang scroll yang tak disengajakan pada Smart Board */
+    body {
+      overflow: hidden;
+      touch-action: pan-y;
+      user-select: none;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 font-sans">
+  
+  <!-- Ruangan untuk Aplikasi React dipaparkan -->
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // --- TETAPAN FIREBASE ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyBatk_Lvyqqm_oD79AJNPCcZgmYQXGJy7I",
+      authDomain: "kuizbm-13ef5.firebaseapp.com",
+      projectId: "kuizbm-13ef5",
+      storageBucket: "kuizbm-13ef5.firebasestorage.app",
+      messagingSenderId: "295985841077",
+      appId: "1:295985841077:web:0abfd11f5dfcd936234ffc",
+      measurementId: "G-QTKZQ29P3T"
+    };
+
+    // Mulakan Firebase (Guna mod compat untuk HTML Standalone)
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    // --- KOMPONEN IKON (Bagi menggantikan Lucide React di HTML) ---
+    const Star = ({ className, style }) => <svg className={className} style={style} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>;
+    const Trophy = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>;
+    const Play = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>;
+    const Maximize = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>;
+    const Sparkles = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>;
+    const RefreshCw = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>;
+    const UserPlus = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>;
+    const Smile = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/></svg>;
+    const Check = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>;
+    const X = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>;
+    const ListOrdered = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="10" x2="21" y1="6" y2="6"/><line x1="10" x2="21" y1="12" y2="12"/><line x1="10" x2="21" y1="18" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>;
+    const ChevronLeft = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>;
+
+    // --- APLIKASI UTAMA ---
+    function App() {
+      const [screen, setScreen] = useState('home'); 
+      const [gameMode, setGameMode] = useState(''); 
+      const [difficulty, setDifficulty] = useState('sederhana'); 
+      
+      const [players, setPlayers] = useState([]);
+      const [newPlayerName, setNewPlayerName] = useState('');
+      
+      const [questions, setQuestions] = useState([]);
+      const [currentQIndex, setCurrentQIndex] = useState(0);
+      const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
+      const [scores, setScores] = useState({});
+      
+      const [selectedWords, setSelectedWords] = useState([]);
+      const [availableWords, setAvailableWords] = useState([]);
+      const [feedback, setFeedback] = useState(null); 
+
+      // --- STATE FIREBASE ---
+      const [isDbLoaded, setIsDbLoaded] = useState(false);
+      const [dbQuestions, setDbQuestions] = useState({
+        ejaan: { sederhana: [], tinggi: [] },
+        bina_ayat: { sederhana: [], tinggi: [] }
+      });
+      const [leaderboardData, setLeaderboardData] = useState([]);
+      const [isSavingScores, setIsSavingScores] = useState(false);
+
+      // Ambil soalan dari Firebase
+      const fetchQuestionsFromDB = async () => {
+        try {
+          const qSnapshot = await db.collection("questions").get();
+          const tempQuestions = {
+            ejaan: { sederhana: [], tinggi: [] },
+            bina_ayat: { sederhana: [], tinggi: [] }
+          };
+
+          qSnapshot.forEach((doc) => {
+            const data = doc.data();
+            if (tempQuestions[data.mode] && tempQuestions[data.mode][data.difficulty]) {
+              tempQuestions[data.mode][data.difficulty].push({ id: doc.id, ...data });
+            }
+          });
+          
+          setDbQuestions(tempQuestions);
+          setIsDbLoaded(true);
+        } catch (error) {
+          console.error("Ralat mengambil soalan:", error);
+        }
+      };
+
+      // Ambil senarai juara dari Firebase
+      const fetchLeaderboardFromDB = async () => {
+        try {
+          const lSnapshot = await db.collection("leaderboard").get();
+          const tempLeaderboard = [];
+          lSnapshot.forEach((doc) => {
+            tempLeaderboard.push({ id: doc.id, ...doc.data() });
+          });
+          // Susun markah dari tertinggi ke terendah
+          tempLeaderboard.sort((a, b) => b.markah - a.markah);
+          setLeaderboardData(tempLeaderboard);
+        } catch (error) {
+          console.error("Ralat mengambil senarai juara:", error);
+        }
+      };
+
+      // Login Anonymous Firebase sewaktu buka aplikasi
+      useEffect(() => {
+        auth.signInAnonymously()
+          .then(() => {
+            fetchQuestionsFromDB();
+            fetchLeaderboardFromDB();
+          })
+          .catch((error) => console.error("Ralat Auth:", error));
+      }, []);
+
+      // Fungsi skrin penuh (Smart Board)
+      const toggleFullScreen = () => {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(err => console.log(err));
+        } else {
+          if (document.exitFullscreen) document.exitFullscreen();
+        }
+      };
+
+      // Fisher-Yates shuffle (Rawak Soalan/Perkataan)
+      const shuffleArray = (array) => {
+        const shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+      };
+
+      const startGameSetup = (mode) => {
+        setGameMode(mode);
+        setScreen('setup');
+      };
+
+      const addPlayer = () => {
+        if (newPlayerName.trim() !== '') {
+          setPlayers([...players, newPlayerName.trim()]);
+          setScores({ ...scores, [newPlayerName.trim()]: 0 });
+          setNewPlayerName('');
+        }
+      };
+
+      const removePlayer = (index) => {
+        const newPlayers = [...players];
+        const removedPlayer = newPlayers.splice(index, 1)[0];
+        setPlayers(newPlayers);
+        const newScores = { ...scores };
+        delete newScores[removedPlayer];
+        setScores(newScores);
+      };
+
+      const startQuiz = () => {
+        if (players.length === 0) {
+          alert("Sila masukkan sekurang-kurangnya satu nama murid!");
+          return;
+        }
+        
+        let selectedQuestions = shuffleArray(dbQuestions[gameMode][difficulty]);
+
+        if (selectedQuestions.length === 0) {
+          alert("Soalan belum ada di dalam pangkalan data untuk tahap ini. Sila muat naik melalui fail admin cikgu dahulu.");
+          return;
+        }
+
+        setQuestions(selectedQuestions);
+        setCurrentQIndex(0);
+        setCurrentPlayerIndex(0);
+        
+        if (gameMode === 'bina_ayat' && selectedQuestions.length > 0) {
+          setAvailableWords(shuffleArray(selectedQuestions[0].perkataan));
+          setSelectedWords([]);
+        }
+        
+        setScreen('play');
+      };
+
+      const handleEjaanAnswer = (jawapanPilih) => {
+        const isCorrect = jawapanPilih === questions[currentQIndex].jawapan;
+        processAnswer(isCorrect);
+      };
+
+      const handleWordSelect = (word, index) => {
+        const newAvailable = [...availableWords];
+        newAvailable.splice(index, 1);
+        setAvailableWords(newAvailable);
+        setSelectedWords([...selectedWords, word]);
+      };
+
+      const handleWordDeselect = (word, index) => {
+        const newSelected = [...selectedWords];
+        newSelected.splice(index, 1);
+        setSelectedWords(newSelected);
+        setAvailableWords([...availableWords, word]);
+      };
+
+      const checkBinaAyat = () => {
+        const currentQ = questions[currentQIndex];
+        const userAyat = selectedWords.join(" ");
+        const isCorrect = userAyat.toLowerCase() === currentQ.ayat.toLowerCase();
+        processAnswer(isCorrect);
+      };
+
+      const processAnswer = (isCorrect) => {
+        if (isCorrect) {
+          setFeedback('correct');
+          const currentPlayer = players[currentPlayerIndex];
+          setScores(prev => ({ ...prev, [currentPlayer]: prev[currentPlayer] + 1 }));
+        } else {
+          setFeedback('wrong');
+        }
+
+        setTimeout(() => {
+          setFeedback(null);
+          nextTurn();
+        }, 2000);
+      };
+
+      const nextTurn = () => {
+        const nextQIndex = currentQIndex + 1;
+        
+        if (nextQIndex < questions.length) {
+          setCurrentQIndex(nextQIndex);
+          setCurrentPlayerIndex((currentPlayerIndex + 1) % players.length);
+          
+          if (gameMode === 'bina_ayat') {
+            setAvailableWords(shuffleArray(questions[nextQIndex].perkataan));
+            setSelectedWords([]);
+          }
+        } else {
+          saveScoresToDB();
+        }
+      };
+
+      // Simpan markah di Firebase
+      const saveScoresToDB = async () => {
+        setIsSavingScores(true);
+        setScreen('result');
+        try {
+          const tarikh = new Date().toLocaleDateString('ms-MY');
+          for (const player of players) {
+            await db.collection("leaderboard").add({
+              nama: player,
+              markah: scores[player],
+              mod: gameMode,
+              tahap: difficulty,
+              tarikh: tarikh,
+              timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+          }
+          fetchLeaderboardFromDB(); 
+        } catch (error) {
+          console.error("Ralat menyimpan markah: ", error);
+        }
+        setIsSavingScores(false);
+      };
+
+      const resetGame = () => {
+        setScreen('home');
+        setPlayers([]);
+        setScores({});
+        setNewPlayerName('');
+      };
+
+      // --- KOMPONEN PAPARAN UI ---
+
+      const LeaderboardUI = () => (
+        <div className="flex flex-col items-center min-h-screen bg-gradient-to-b from-indigo-500 to-purple-600 p-6 font-sans text-white w-full">
+          <h2 className="text-5xl md:text-7xl font-black mt-10 mb-8 text-yellow-300 drop-shadow-lg flex items-center justify-center gap-4 w-full">
+            <ListOrdered className="w-16 h-16" /> SENARAI JUARA
+          </h2>
+
+          <div className="bg-white/10 backdrop-blur-md p-8 rounded-3xl w-full max-w-4xl border-2 border-white/20 mb-8 max-h-[60vh] overflow-y-auto">
+            {leaderboardData.length === 0 ? (
+              <p className="text-center text-2xl text-gray-300 italic">Belum ada rekod permainan.</p>
+            ) : (
+              <table className="w-full text-2xl">
+                <thead>
+                  <tr className="border-b-4 border-purple-400 text-purple-200">
+                    <th className="py-4 text-left">Ked.</th>
+                    <th className="py-4 text-left">Nama</th>
+                    <th className="py-4 text-center">Mod</th>
+                    <th className="py-4 text-center">Markah</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {leaderboardData.map((rekod, idx) => (
+                    <tr key={idx} className="border-b border-purple-400/30 hover:bg-white/5 transition-colors">
+                      <td className="py-4 font-black text-yellow-400">#{idx + 1}</td>
+                      <td className="py-4 font-bold">{rekod.nama.toUpperCase()}</td>
+                      <td className="py-4 text-center text-lg">{rekod.mod === 'ejaan' ? 'EJAAN' : 'BINA AYAT'} ({rekod.tahap})</td>
+                      <td className="py-4 text-center font-black text-green-400 flex items-center justify-center gap-1">
+                        {rekod.markah} <Star className="w-6 h-6 fill-green-400 text-green-400 mb-1"/>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+
+          <button onClick={() => setScreen('home')} className="bg-purple-800 hover:bg-purple-700 text-white px-10 py-5 rounded-full text-3xl font-bold shadow-lg flex items-center transition-transform hover:scale-105">
+            <ChevronLeft className="w-8 h-8 mr-2" /> KEMBALI
+          </button>
+        </div>
+      );
+
+      const HomeUI = () => (
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-blue-300 via-purple-300 to-pink-300 p-6 relative w-full">
+          {!isDbLoaded && (
+            <div className="absolute top-4 left-4 bg-white/50 text-blue-900 px-4 py-2 rounded-full font-bold flex items-center gap-2 animate-pulse z-50">
+              <RefreshCw className="w-5 h-5 animate-spin" /> Menyambung ke Pangkalan Data...
+            </div>
+          )}
+
+          <div className="absolute top-10 flex space-x-4 animate-bounce">
+            <Star className="text-yellow-400 w-16 h-16 2xl:w-24 2xl:h-24 fill-yellow-400" />
+            <Sparkles className="text-white w-16 h-16 2xl:w-24 2xl:h-24" />
+            <Star className="text-yellow-400 w-16 h-16 2xl:w-24 2xl:h-24 fill-yellow-400" />
+          </div>
+          
+          <div className="bg-white/40 backdrop-blur-md p-10 2xl:p-16 rounded-3xl shadow-2xl border-4 border-white text-center mb-10 transform hover:scale-105 transition-transform duration-300 flex flex-col items-center mt-12 w-full max-w-4xl">
+            <img src="logo.png" alt="Logo SKPK Miri" className="w-40 h-40 2xl:w-64 2xl:h-64 object-contain mb-6 drop-shadow-xl" onError={(e) => e.target.style.display='none'} />
+            <h1 className="text-7xl md:text-8xl 2xl:text-[150px] font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-600 drop-shadow-sm mb-4 leading-tight">
+              JUARA<br/>BAHASA
+            </h1>
+            <p className="text-3xl 2xl:text-5xl font-bold text-white bg-pink-500 rounded-full px-8 py-4 inline-block shadow-lg mt-4">
+              SK Pendidikan Khas Miri
+            </p>
+          </div>
+
+          <div className="flex flex-col md:flex-row gap-6 w-full max-w-5xl 2xl:max-w-7xl justify-center mb-10 z-10">
+            <button 
+              onClick={() => window.location.href = 'kuiz_ejaan.html'}
+              className="group relative flex-1 bg-gradient-to-b from-yellow-300 to-orange-400 rounded-3xl p-8 2xl:p-12 border-b-8 border-orange-600 active:border-b-0 active:translate-y-2 transition-all shadow-xl"
+            >
+              <div className="flex flex-col items-center">
+                <span className="text-8xl 2xl:text-[150px] mb-4 group-hover:animate-bounce block">🔤</span>
+                <span className="text-4xl 2xl:text-6xl font-black text-white drop-shadow-md">KUIZ EJAAN</span>
+              </div>
+            </button>
+
+            <button 
+              onClick={() => startGameSetup('bina_ayat')}
+              className="group relative flex-1 bg-gradient-to-b from-green-300 to-emerald-500 rounded-3xl p-8 2xl:p-12 border-b-8 border-emerald-700 active:border-b-0 active:translate-y-2 transition-all shadow-xl"
+            >
+              <div className="flex flex-col items-center">
+                <span className="text-8xl 2xl:text-[150px] mb-4 group-hover:animate-bounce block">🧩</span>
+                <span className="text-4xl 2xl:text-6xl font-black text-white drop-shadow-md">KUIZ BINA AYAT</span>
+              </div>
+            </button>
+          </div>
+
+          <div className="flex gap-4 z-10">
+            <button onClick={() => setScreen('leaderboard')} className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-2xl px-10 py-4 rounded-full shadow-lg border-2 border-white flex items-center gap-2 transition-transform hover:scale-105">
+              <Trophy className="w-8 h-8" /> SENARAI JUARA
+            </button>
+          </div>
+        </div>
+      );
+
+      const SetupUI = () => (
+        <div className="flex flex-col items-center min-h-screen bg-gradient-to-b from-yellow-200 to-orange-200 p-6 w-full">
+          <h2 className="text-5xl 2xl:text-7xl font-black text-orange-600 mt-10 mb-8 drop-shadow-sm text-center">
+            {gameMode === 'ejaan' ? 'KUIZ EJAAN' : 'KUIZ BINA AYAT'}
+          </h2>
+
+          <div className="bg-white rounded-3xl shadow-xl p-8 w-full max-w-2xl 2xl:max-w-4xl border-4 border-orange-300 mb-8">
+            <h3 className="text-3xl 2xl:text-5xl font-bold text-gray-700 mb-6 flex items-center justify-center gap-3">
+              <UserPlus className="text-blue-500 w-10 h-10 2xl:w-14 2xl:h-14" /> Senarai Peserta (Giliran)
+            </h3>
+            
+            <div className="flex gap-4 mb-6 w-full">
+              <input 
+                type="text" 
+                value={newPlayerName}
+                onChange={(e) => setNewPlayerName(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && addPlayer()}
+                placeholder="Nama Murid..." 
+                className="flex-1 text-2xl 2xl:text-4xl p-4 2xl:p-6 rounded-2xl border-4 border-blue-200 focus:border-blue-500 outline-none font-bold text-gray-700 w-full"
+              />
+              <button 
+                onClick={addPlayer}
+                className="bg-blue-500 hover:bg-blue-600 text-white text-2xl 2xl:text-4xl font-bold px-8 py-4 2xl:px-12 2xl:py-6 rounded-2xl shadow-[0_6px_0_0_#1d4ed8] active:shadow-none active:translate-y-2 transition-all"
+              >
+                TAMBAH
+              </button>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              {players.map((player, idx) => (
+                <div key={idx} className="bg-pink-100 border-2 border-pink-400 rounded-full px-6 py-3 2xl:px-8 2xl:py-4 flex items-center gap-3 text-2xl 2xl:text-4xl font-bold text-pink-700 animate-fade-in-up">
+                  {idx + 1}. {player}
+                  <button onClick={() => removePlayer(idx)} className="bg-pink-400 text-white rounded-full p-1 hover:bg-pink-600 flex items-center justify-center">
+                    <X className="w-6 h-6 2xl:w-8 2xl:h-8" />
+                  </button>
+                </div>
+              ))}
+              {players.length === 0 && <p className="text-xl 2xl:text-3xl text-gray-400 italic w-full text-center">Belum ada peserta dimasukkan.</p>}
+            </div>
+          </div>
+
+          <div className="bg-white rounded-3xl shadow-xl p-8 w-full max-w-2xl 2xl:max-w-4xl border-4 border-orange-300 mb-8">
+             <h3 className="text-3xl 2xl:text-5xl font-bold text-gray-700 mb-6 text-center">Pilih Tahap</h3>
+             <div className="flex gap-4">
+                <button 
+                  onClick={() => setDifficulty('sederhana')}
+                  className={`flex-1 text-2xl 2xl:text-4xl font-bold py-5 2xl:py-8 rounded-2xl transition-all border-b-8 ${difficulty === 'sederhana' ? 'bg-green-400 text-white border-green-600 shadow-inner translate-y-2 border-b-0' : 'bg-green-100 text-green-700 border-green-400 hover:bg-green-200'}`}
+                >
+                  TAHAP SEDERHANA
+                </button>
+                <button 
+                  onClick={() => setDifficulty('tinggi')}
+                  className={`flex-1 text-2xl 2xl:text-4xl font-bold py-5 2xl:py-8 rounded-2xl transition-all border-b-8 ${difficulty === 'tinggi' ? 'bg-red-400 text-white border-red-600 shadow-inner translate-y-2 border-b-0' : 'bg-red-100 text-red-700 border-red-400 hover:bg-red-200'}`}
+                >
+                  TAHAP TINGGI
+                </button>
+             </div>
+          </div>
+
+          <div className="flex gap-4">
+            <button onClick={() => setScreen('home')} className="bg-gray-400 hover:bg-gray-500 text-white text-3xl 2xl:text-5xl font-black px-10 py-5 2xl:px-14 2xl:py-8 rounded-3xl shadow-[0_8px_0_0_#4b5563] active:shadow-none active:translate-y-2 transition-all">
+              KEMBALI
+            </button>
+            <button 
+              onClick={startQuiz}
+              disabled={players.length === 0}
+              className={`flex items-center justify-center gap-3 text-3xl 2xl:text-5xl font-black px-12 py-5 2xl:px-16 2xl:py-8 rounded-3xl transition-all ${players.length > 0 ? 'bg-yellow-400 hover:bg-yellow-500 text-yellow-900 shadow-[0_8px_0_0_#b45309] active:shadow-none active:translate-y-2 cursor-pointer' : 'bg-gray-200 text-gray-400 cursor-not-allowed border-b-8 border-gray-300'}`}
+            >
+              MULA KUIZ! <Play className="w-10 h-10 2xl:w-14 2xl:h-14" />
+            </button>
+          </div>
+        </div>
+      );
+
+      const FeedbackOverlay = () => {
+        if (!feedback) return null;
+        return (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+            {feedback === 'correct' ? (
+              <div className="bg-green-400 rounded-full p-12 2xl:p-20 animate-bounce border-8 border-white shadow-2xl flex flex-col items-center">
+                <Check className="text-white w-32 h-32 2xl:w-48 2xl:h-48" />
+                <span className="text-5xl 2xl:text-7xl font-black text-white mt-4 drop-shadow-md">PANDAI!</span>
+              </div>
+            ) : (
+              <div className="bg-red-500 rounded-full p-12 2xl:p-20 animate-pulse border-8 border-white shadow-2xl flex flex-col items-center">
+                <X className="text-white w-32 h-32 2xl:w-48 2xl:h-48" />
+                <span className="text-5xl 2xl:text-7xl font-black text-white mt-4 drop-shadow-md">CUBA LAGI!</span>
+              </div>
+            )}
+          </div>
+        );
+      };
+
+      const QuizEjaanUI = () => {
+        const currentQ = questions[currentQIndex];
+        if (!currentQ) return null;
+        const currentPlayer = players[currentPlayerIndex];
+
+        return (
+          <div className="flex flex-col items-center min-h-screen bg-gradient-to-b from-cyan-200 to-blue-300 p-6 w-full">
+            <FeedbackOverlay />
+            
+            <div className="bg-yellow-400 border-4 border-white text-yellow-900 rounded-full px-10 py-4 mb-8 shadow-lg animate-bounce flex items-center gap-4 mt-10">
+              <Smile className="w-10 h-10 2xl:w-16 2xl:h-16" />
+              <span className="text-4xl 2xl:text-6xl font-black">GILIRAN: {currentPlayer.toUpperCase()}</span>
+            </div>
+
+            <div className="w-full max-w-4xl 2xl:max-w-6xl flex justify-between items-center mb-4 text-2xl 2xl:text-4xl font-bold text-blue-800">
+              <span>Soalan {currentQIndex + 1} / {questions.length}</span>
+              <span className="bg-white/50 px-4 py-2 rounded-xl">Markah {currentPlayer}: {scores[currentPlayer]}</span>
+            </div>
+
+            <div className="bg-white rounded-3xl shadow-2xl p-10 2xl:p-16 w-full max-w-4xl 2xl:max-w-6xl flex flex-col items-center border-8 border-blue-400 relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-4 bg-blue-100">
+                <div className="h-full bg-green-400 transition-all duration-500" style={{width: `${((currentQIndex)/questions.length)*100}%`}}></div>
+              </div>
+              
+              <h2 className="text-4xl 2xl:text-6xl font-bold text-gray-700 mb-8 mt-4 text-center leading-tight">{currentQ.soalan}</h2>
+              
+              <div className="text-[150px] 2xl:text-[250px] mb-8 leading-none bg-blue-50 rounded-full p-12 shadow-inner border-4 border-blue-100">
+                {currentQ.emoji}
+              </div>
+
+              <div className="grid grid-cols-2 gap-6 w-full">
+                {currentQ.pilihan.map((pilihan, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleEjaanAnswer(pilihan)}
+                    className="bg-blue-100 hover:bg-blue-200 text-blue-800 border-b-8 border-blue-300 hover:border-blue-400 active:border-b-0 active:translate-y-2 transition-all rounded-3xl p-8 2xl:p-12 text-5xl 2xl:text-7xl font-black shadow-md break-words"
+                  >
+                    {pilihan}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      const QuizBinaAyatUI = () => {
+        const currentQ = questions[currentQIndex];
+        if (!currentQ) return null;
+        const currentPlayer = players[currentPlayerIndex];
+
+        return (
+          <div className="flex flex-col items-center min-h-screen bg-gradient-to-b from-green-200 to-emerald-300 p-6 w-full">
+            <FeedbackOverlay />
+
+            <div className="bg-yellow-400 border-4 border-white text-yellow-900 rounded-full px-10 py-4 mb-8 shadow-lg animate-bounce flex items-center gap-4 mt-10">
+              <Smile className="w-10 h-10 2xl:w-16 2xl:h-16" />
+              <span className="text-4xl 2xl:text-6xl font-black">GILIRAN: {currentPlayer.toUpperCase()}</span>
+            </div>
+
+            <div className="w-full max-w-4xl 2xl:max-w-7xl flex justify-between items-center mb-4 text-2xl 2xl:text-4xl font-bold text-green-800">
+              <span>Soalan {currentQIndex + 1} / {questions.length}</span>
+              <span className="bg-white/50 px-4 py-2 rounded-xl">Markah {currentPlayer}: {scores[currentPlayer]}</span>
+            </div>
+
+            <div className="bg-white rounded-3xl shadow-2xl p-10 2xl:p-16 w-full max-w-5xl 2xl:max-w-7xl flex flex-col items-center border-8 border-green-500 relative">
+              <h2 className="text-4xl 2xl:text-6xl font-bold text-gray-700 mb-8 text-center leading-tight">{currentQ.soalan}</h2>
+
+              <div className="w-full min-h-[150px] 2xl:min-h-[250px] bg-gray-100 rounded-2xl border-4 border-dashed border-gray-300 p-6 2xl:p-10 mb-10 flex flex-wrap gap-4 2xl:gap-6 items-center justify-center">
+                {selectedWords.length === 0 && <span className="text-2xl 2xl:text-4xl text-gray-400 italic">Tekan perkataan di bawah...</span>}
+                {selectedWords.map((word, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleWordDeselect(word, idx)}
+                    className="bg-green-400 text-white text-4xl 2xl:text-6xl font-black px-8 py-4 2xl:px-12 2xl:py-6 rounded-2xl shadow-[0_6px_0_0_#15803d] active:shadow-none active:translate-y-1 transition-all animate-fade-in"
+                  >
+                    {word}
+                  </button>
+                ))}
+              </div>
+
+              <div className="w-full flex flex-wrap gap-4 2xl:gap-6 items-center justify-center mb-10">
+                {availableWords.map((word, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleWordSelect(word, idx)}
+                    className="bg-yellow-300 text-yellow-900 text-4xl 2xl:text-6xl font-black px-8 py-4 2xl:px-12 2xl:py-6 rounded-2xl shadow-[0_6px_0_0_#b45309] active:shadow-none active:translate-y-1 transition-all hover:bg-yellow-400"
+                  >
+                    {word}
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex gap-4">
+                <button 
+                  onClick={() => {
+                    setAvailableWords(shuffleArray(currentQ.perkataan));
+                    setSelectedWords([]);
+                  }}
+                  className="bg-gray-200 text-gray-700 text-2xl 2xl:text-4xl font-bold px-8 py-4 2xl:px-12 2xl:py-6 rounded-2xl border-b-4 border-gray-400 active:border-b-0 active:translate-y-1 flex items-center"
+                >
+                  <RefreshCw className="w-6 h-6 2xl:w-10 2xl:h-10 mr-2" /> MULA SEMULA
+                </button>
+                
+                <button 
+                  onClick={checkBinaAyat}
+                  disabled={availableWords.length > 0}
+                  className={`text-3xl 2xl:text-5xl font-black px-12 py-4 2xl:px-16 2xl:py-6 rounded-2xl transition-all border-b-8 ${availableWords.length === 0 ? 'bg-blue-500 text-white border-blue-700 hover:bg-blue-400 active:border-b-0 active:translate-y-2' : 'bg-gray-300 text-gray-500 border-gray-400 cursor-not-allowed'}`}
+                >
+                  SEMAK JAWAPAN
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      const ResultUI = () => {
+        const sortedPlayers = [...players].sort((a, b) => scores[b] - scores[a]);
+        const maxScore = scores[sortedPlayers[0]];
+
+        return (
+          <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-purple-400 via-pink-400 to-red-400 p-6 w-full">
+            <div className="absolute inset-0 overflow-hidden pointer-events-none flex justify-around">
+               {[...Array(10)].map((_, i) => (
+                 <Star key={i} className={`text-yellow-300 w-16 h-16 2xl:w-24 2xl:h-24 animate-bounce opacity-70`} style={{ animationDelay: `${i * 0.2}s`, marginTop: `${Math.random() * 50}vh`}} />
+               ))}
+            </div>
+
+            <div className="bg-white/90 backdrop-blur p-12 2xl:p-20 rounded-[3rem] shadow-2xl border-8 border-yellow-300 text-center max-w-3xl 2xl:max-w-5xl w-full relative z-10">
+              <Trophy className="w-48 h-48 2xl:w-64 2xl:h-64 text-yellow-400 mx-auto mb-6 drop-shadow-xl animate-pulse" />
+              <h1 className="text-7xl 2xl:text-[100px] font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-pink-600 mb-2 leading-tight">
+                TAHNIAH!
+              </h1>
+              <p className="text-3xl 2xl:text-5xl font-bold text-gray-600 mb-10">
+                {isSavingScores ? "Menyimpan markah..." : "Kuiz telah tamat!"}
+              </p>
+
+              <div className="bg-purple-100 rounded-3xl p-6 2xl:p-10 mb-10 text-left">
+                <h3 className="text-3xl 2xl:text-5xl font-black text-purple-800 border-b-4 border-purple-200 pb-4 mb-4 text-center">KEPUTUSAN</h3>
+                {sortedPlayers.map((player, idx) => (
+                  <div key={idx} className={`flex justify-between items-center text-3xl 2xl:text-5xl p-4 2xl:p-6 rounded-2xl mb-2 font-bold ${scores[player] === maxScore ? 'bg-yellow-300 text-yellow-900 border-2 border-yellow-500' : 'bg-white text-gray-700'}`}>
+                    <div className="flex items-center gap-4">
+                      <span className="w-10 h-10 2xl:w-14 2xl:h-14 flex items-center justify-center bg-black/10 rounded-full text-2xl 2xl:text-4xl">{idx + 1}</span>
+                      {player}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {scores[player]} <Star className="w-8 h-8 2xl:w-12 2xl:h-12 text-yellow-500 fill-yellow-500 mb-1" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex gap-4">
+                 <button 
+                   onClick={() => setScreen('leaderboard')}
+                   className="flex-1 bg-purple-600 hover:bg-purple-700 text-white text-2xl 2xl:text-4xl font-bold px-6 py-6 2xl:py-8 rounded-full shadow-[0_8px_0_0_#4c1d95] active:shadow-none active:translate-y-2 transition-all"
+                 >
+                   SENARAI JUARA
+                 </button>
+                 <button 
+                   onClick={resetGame}
+                   className="flex-1 bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-white text-4xl 2xl:text-5xl font-black px-10 py-6 2xl:py-8 rounded-full shadow-[0_10px_0_0_#047857] active:shadow-none active:translate-y-2 transition-all"
+                 >
+                   MAIN LAGI
+                 </button>
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      return (
+        <div className="relative min-h-screen">
+          <button 
+            onClick={toggleFullScreen}
+            className="absolute top-6 right-6 z-50 bg-black/20 hover:bg-black/40 text-white p-4 rounded-full backdrop-blur-sm transition-all shadow-lg"
+            title="Skrin Penuh"
+          >
+            <Maximize className="w-8 h-8 2xl:w-12 2xl:h-12" />
+          </button>
+          
+          {screen === 'home' && <HomeUI />}
+          {screen === 'setup' && <SetupUI />}
+          {screen === 'play' && gameMode === 'ejaan' && <QuizEjaanUI />}
+          {screen === 'play' && gameMode === 'bina_ayat' && <QuizBinaAyatUI />}
+          {screen === 'result' && <ResultUI />}
+          {screen === 'leaderboard' && <LeaderboardUI />}
+        </div>
+      );
+    }
+
+    // Melancarkan React ke dalam HTML
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
