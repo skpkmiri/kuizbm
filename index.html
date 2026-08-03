@@ -2,7 +2,7 @@
 <html lang="ms">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
   <title>Juara Bahasa - SK Pendidikan Khas Miri</title>
   
   <!-- Tailwind CSS -->
@@ -31,12 +31,13 @@
     /* Halang scroll yang tak disengajakan pada Smart Board */
     body {
       overflow: hidden;
-      touch-action: pan-y;
+      touch-action: none;
       user-select: none;
+      -webkit-user-select: none;
     }
   </style>
 </head>
-<body class="bg-gray-100 font-sans">
+<body class="bg-black font-sans">
   
   <!-- Ruangan untuk Aplikasi React dipaparkan -->
   <div id="root"></div>
@@ -306,7 +307,7 @@
       // --- KOMPONEN PAPARAN UI ---
 
       const LeaderboardUI = () => (
-        <div className="flex flex-col items-center min-h-screen bg-gradient-to-b from-indigo-500 to-purple-600 p-6 font-sans text-white w-full">
+        <div className="flex flex-col items-center h-full bg-gradient-to-b from-indigo-500 to-purple-600 p-6 font-sans text-white w-full">
           <h2 className="text-5xl md:text-7xl font-black mt-10 mb-8 text-yellow-300 drop-shadow-lg flex items-center justify-center gap-4 w-full">
             <ListOrdered className="w-16 h-16" /> SENARAI JUARA
           </h2>
@@ -347,7 +348,7 @@
       );
 
       const HomeUI = () => (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-blue-300 via-purple-300 to-pink-300 p-6 relative w-full">
+        <div className="flex flex-col items-center justify-center h-full bg-gradient-to-b from-blue-300 via-purple-300 to-pink-300 p-6 relative w-full">
           {!isDbLoaded && (
             <div className="absolute top-4 left-4 bg-white/50 text-blue-900 px-4 py-2 rounded-full font-bold flex items-center gap-2 animate-pulse z-50">
               <RefreshCw className="w-5 h-5 animate-spin" /> Menyambung ke Pangkalan Data...
@@ -401,7 +402,7 @@
       );
 
       const SetupUI = () => (
-        <div className="flex flex-col items-center min-h-screen bg-gradient-to-b from-yellow-200 to-orange-200 p-6 w-full">
+        <div className="flex flex-col items-center h-full overflow-y-auto bg-gradient-to-b from-yellow-200 to-orange-200 p-6 w-full">
           <h2 className="text-5xl 2xl:text-7xl font-black text-orange-600 mt-10 mb-8 drop-shadow-sm text-center">
             {gameMode === 'ejaan' ? 'KUIZ EJAAN' : 'KUIZ BINA AYAT'}
           </h2>
@@ -499,7 +500,7 @@
         const currentPlayer = players[currentPlayerIndex];
 
         return (
-          <div className="flex flex-col items-center min-h-screen bg-gradient-to-b from-cyan-200 to-blue-300 p-6 w-full">
+          <div className="flex flex-col items-center h-full overflow-y-auto bg-gradient-to-b from-cyan-200 to-blue-300 p-6 w-full">
             <FeedbackOverlay />
             
             <div className="bg-yellow-400 border-4 border-white text-yellow-900 rounded-full px-10 py-4 mb-8 shadow-lg animate-bounce flex items-center gap-4 mt-10">
@@ -545,7 +546,7 @@
         const currentPlayer = players[currentPlayerIndex];
 
         return (
-          <div className="flex flex-col items-center min-h-screen bg-gradient-to-b from-green-200 to-emerald-300 p-6 w-full">
+          <div className="flex flex-col items-center h-full overflow-y-auto bg-gradient-to-b from-green-200 to-emerald-300 p-6 w-full">
             <FeedbackOverlay />
 
             <div className="bg-yellow-400 border-4 border-white text-yellow-900 rounded-full px-10 py-4 mb-8 shadow-lg animate-bounce flex items-center gap-4 mt-10">
@@ -615,7 +616,7 @@
         const maxScore = scores[sortedPlayers[0]];
 
         return (
-          <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-purple-400 via-pink-400 to-red-400 p-6 w-full">
+          <div className="flex flex-col items-center justify-center h-full overflow-y-auto bg-gradient-to-b from-purple-400 via-pink-400 to-red-400 p-6 w-full">
             <div className="absolute inset-0 overflow-hidden pointer-events-none flex justify-around">
                {[...Array(10)].map((_, i) => (
                  <Star key={i} className={`text-yellow-300 w-16 h-16 2xl:w-24 2xl:h-24 animate-bounce opacity-70`} style={{ animationDelay: `${i * 0.2}s`, marginTop: `${Math.random() * 50}vh`}} />
@@ -666,21 +667,22 @@
       };
 
       return (
-        <div className="relative min-h-screen">
-          <button 
-            onClick={toggleFullScreen}
-            className="absolute top-6 right-6 z-50 bg-black/20 hover:bg-black/40 text-white p-4 rounded-full backdrop-blur-sm transition-all shadow-lg"
-            title="Skrin Penuh"
-          >
-            <Maximize className="w-8 h-8 2xl:w-12 2xl:h-12" />
-          </button>
-          
-          {screen === 'home' && <HomeUI />}
-          {screen === 'setup' && <SetupUI />}
-          {screen === 'play' && gameMode === 'ejaan' && <QuizEjaanUI />}
-          {screen === 'play' && gameMode === 'bina_ayat' && <QuizBinaAyatUI />}
-          {screen === 'result' && <ResultUI />}
-          {screen === 'leaderboard' && <LeaderboardUI />}
+        <div className="flex items-center justify-center w-screen h-screen bg-black overflow-hidden">
+          <div className="w-[100vw] h-[56.25vw] max-h-[100vh] max-w-[177.78vh] relative bg-gray-100 shadow-[0_0_50px_rgba(255,255,255,0.1)] overflow-hidden">
+            <button 
+              onClick={toggleFullScreen}
+              className="absolute top-6 right-6 z-50 bg-black/20 hover:bg-black/40 text-white p-4 rounded-full backdrop-blur-sm transition-all shadow-lg"
+              title="Skrin Penuh"
+            >
+              <Maximize className="w-8 h-8 2xl:w-12 2xl:h-12" />
+            </button>
+            
+            {screen === 'home' && <HomeUI />}
+            {screen === 'play' && gameMode === 'ejaan' && <QuizEjaanUI />}
+            {screen === 'play' && gameMode === 'bina_ayat' && <QuizBinaAyatUI />}
+            {screen === 'result' && <ResultUI />}
+            {screen === 'leaderboard' && <LeaderboardUI />}
+          </div>
         </div>
       );
     }
