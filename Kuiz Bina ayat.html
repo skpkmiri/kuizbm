@@ -292,21 +292,21 @@
             </div>
           </header>
 
-          {}
-          <section class="bg-gray-900 rounded-xl p-2 shadow border-2 border-gray-700 text-white shrink-0 relative">
-            <div class="flex justify-between items-center mb-1">
-              <h2 class="text-[11px] font-bold text-yellow-400 flex items-center gap-1">
+          {/* TREK KERETA LUMBA (DIBESARKAN) */}
+          <section class="bg-gray-900 rounded-xl p-3 md:p-4 shadow border-2 border-gray-700 text-white shrink-0 relative z-10">
+            <div class="flex justify-between items-center mb-2">
+              <h2 class="text-xs font-bold text-yellow-400 flex items-center gap-1">
                 <span>🏁</span> TREK LUMBA
               </h2>
             </div>
 
-            <div class="space-y-1.5 relative py-1">
+            <div class="space-y-2.5 relative py-1">
               {STUDENTS.map((s) => {
                 const step = positions[s.id];
                 const leftPercent = (step / 25) * 88;
                 
                 return (
-                  <div key={s.id} class="relative bg-gray-800 rounded h-7 flex items-center px-2 border-b-2 border-dashed border-gray-600">
+                  <div key={s.id} class="relative bg-gray-800 rounded h-10 md:h-12 flex items-center px-2 border-b-2 border-dashed border-gray-600">
                     <div class="absolute right-3 top-0 bottom-0 w-3 bg-yellow-400/20 border-l border-r border-yellow-400 flex items-center justify-center">
                       <span class="text-[6px] font-bold text-yellow-300 rotate-90">FINISH</span>
                     </div>
@@ -315,7 +315,7 @@
                       class="absolute transition-all duration-500 ease-out flex items-center"
                       style={{ left: `${leftPercent}%` }}
                     >
-                      <RacingCarIcon className={`w-14 h-auto ${s.text} drop-shadow-md`} />
+                      <RacingCarIcon className={`w-16 md:w-20 h-auto ${s.text} drop-shadow-md`} />
                     </div>
                   </div>
                 );
@@ -323,7 +323,7 @@
             </div>
           </section>
 
-          {}
+          {/* BAHAGIAN KUIZ (DIRENDAHKAN) */}
           {!gameEnded ? (
             <div class="grid grid-cols-5 gap-2.5 flex-1 min-h-0">
               
@@ -351,8 +351,8 @@
 
                       {!state.finished ? (
                         <>
-                          <div class="flex flex-col gap-3 my-auto py-1">
-                            <div class={`${s.bgLight} border border-dashed border-gray-300 rounded-lg p-2 min-h-[48px] flex flex-row flex-wrap items-center justify-center gap-1`}>
+                          <div class="flex flex-col gap-1.5 my-auto py-0.5">
+                            <div class={`${s.bgLight} border border-dashed border-gray-300 rounded-lg p-1.5 min-h-[40px] flex flex-row flex-wrap items-center justify-center gap-1`}>
                               {state.selected.length === 0 ? (
                                 <span class="text-gray-400 text-[10px] text-center w-full">Susun menjadi ayat...</span>
                               ) : (
@@ -368,12 +368,12 @@
                               )}
                             </div>
 
-                            <div class="flex flex-col gap-1.5">
+                            <div class="flex flex-col gap-1">
                               {state.available.map((w, idx) => (
                                 <button
                                   key={idx}
                                   onClick={() => handleSelectWord(s.id, w, idx)}
-                                  class="w-full bg-white hover:bg-yellow-100 text-gray-800 border border-yellow-400 font-bold text-[11px] py-1.5 rounded shadow-sm text-center"
+                                  class="w-full bg-white hover:bg-yellow-100 text-gray-800 border border-yellow-400 font-bold text-[11px] py-1 rounded shadow-sm text-center"
                                 >
                                   {w}
                                 </button>
@@ -386,7 +386,7 @@
                               <button
                                 onClick={() => handleSumbitAnswer(s.id)}
                                 disabled={state.selected.length !== currentWords.length}
-                                class={`w-full py-2 rounded-lg font-bold text-[11px] text-white shadow transition ${
+                                class={`w-full py-1.5 rounded-lg font-bold text-[11px] text-white shadow transition ${
                                   state.selected.length === currentWords.length
                                     ? "bg-gradient-to-r from-blue-500 to-indigo-600 hover:opacity-90 active:scale-95"
                                     : "bg-gray-300 cursor-not-allowed"
@@ -420,16 +420,16 @@
                     <span>PAPAN MARKAH</span>
                   </h3>
 
-                  <div class="space-y-2 flex-1 overflow-y-auto">
+                  <div class="space-y-1 flex-1 overflow-y-auto mt-1">
                     {STUDENTS.map((s) => {
                       const total = scores[s.id];
                       return (
                         <div
                           key={s.id}
-                          class="px-2 py-2 rounded-lg border border-gray-100 bg-white shadow-sm flex items-center justify-between"
+                          class="px-2 py-1.5 rounded-lg border border-gray-100 bg-white shadow-sm flex items-center justify-between"
                         >
                           <div class="flex items-center gap-1.5">
-                            <RacingCarIcon className={`w-7 h-auto ${s.text}`} />
+                            <RacingCarIcon className={`w-8 h-auto ${s.text}`} />
                             <span class="font-bold text-[11px] text-gray-800">{s.name}</span>
                           </div>
                           <span class="bg-indigo-50 text-indigo-700 border border-indigo-100 font-bold px-2 py-0.5 rounded text-xs">
