@@ -72,7 +72,8 @@
       { id: 0, name: "Joseline", text: "text-pink-500", border: "border-pink-300", bgLight: "bg-pink-50" },
       { id: 1, name: "Aina", text: "text-purple-500", border: "border-purple-300", bgLight: "bg-purple-50" },
       { id: 2, name: "Suraiya", text: "text-amber-500", border: "border-amber-300", bgLight: "bg-amber-50" },
-      { id: 3, name: "Izzuandie", text: "text-blue-500", border: "border-blue-300", bgLight: "bg-blue-50" }
+      { id: 3, name: "Izzuandie", text: "text-blue-500", border: "border-blue-300", bgLight: "bg-blue-50" },
+      { id: 4, name: "Dasuki", text: "text-emerald-500", border: "border-emerald-300", bgLight: "bg-emerald-50" }
     ];
 
     const STUDENT_QUESTIONS = {
@@ -103,6 +104,13 @@
         ["Raju", "lukis", "rumah"], ["Nenek", "makan", "ubat"], ["Adik", "basuh", "muka"], ["Ibu", "lipat", "selimut"], ["Bapa", "tanam", "bunga"],
         ["Ali", "tangkap", "bola"], ["Siti", "susun", "kerusi"], ["Raju", "panjat", "bukit"], ["Kucing", "tangkap", "tikus"], ["Adik", "buka", "buku"],
         ["Kakak", "sapu", "bilik"], ["Datuk", "minum", "air"], ["Nenek", "tanam", "serai"], ["Kami", "jalan", "kaki"], ["Bapa", "bawa", "lori"]
+      ],
+      4: [
+        ["Bapa", "beli", "kereta"], ["Kucing", "gigit", "tikus"], ["Ibu", "basuh", "baju"], ["Dasuki", "makan", "nasi"], ["Adik", "minum", "susu"],
+        ["Abang", "bawa", "lori"], ["Kami", "main", "bola"], ["Datuk", "baca", "buku"], ["Nenek", "anyam", "tikar"], ["Burung", "terbang", "jauh"],
+        ["Lembu", "makan", "rumput"], ["Siti", "sapu", "lantai"], ["Raju", "petik", "bunga"], ["Guru", "ajar", "murid"], ["Dasuki", "lukis", "awan"],
+        ["Ikan", "berenang", "laju"], ["Ayam", "bertelur", "banyak"], ["Mimi", "tulis", "nama"], ["Bapa", "cat", "rumah"], ["Ibu", "lipat", "kain"],
+        ["Adik", "nangis", "kuat"], ["Kakak", "siram", "pokok"], ["Kuda", "lari", "laju"], ["Tikus", "masuk", "lubang"], ["Kami", "sorak", "kuat"]
       ]
     };
 
@@ -125,8 +133,8 @@
         return init;
       });
 
-      const [scores, setScores] = useState({ 0: 0, 1: 0, 2: 0, 3: 0 });
-      const [positions, setPositions] = useState({ 0: 0, 1: 0, 2: 0, 3: 0 });
+      const [scores, setScores] = useState({ 0: 0, 1: 0, 2: 0, 3: 0, 4: 0 });
+      const [positions, setPositions] = useState({ 0: 0, 1: 0, 2: 0, 3: 0, 4: 0 });
       
       const [timeLeft, setTimeLeft] = useState(1200);
       const [timerActive, setTimerActive] = useState(false);
@@ -325,9 +333,9 @@
 
           {/* BAHAGIAN KUIZ (DIRENDAHKAN) */}
           {!gameEnded ? (
-            <div class="grid grid-cols-5 gap-2.5 flex-1 min-h-0">
+            <div class="grid grid-cols-6 gap-2.5 flex-1 min-h-0">
               
-              <main class="col-span-4 grid grid-cols-4 gap-2 h-full overflow-hidden">
+              <main class="col-span-5 grid grid-cols-5 gap-2 h-full overflow-hidden">
                 {STUDENTS.map((s) => {
                   const state = playerStates[s.id];
                   const currentWords = STUDENT_QUESTIONS[s.id][state.qIdx];
@@ -460,7 +468,7 @@
                 Tahniah kepada semua murid yang telah berusaha menyusun ayat dengan hebat!
               </p>
 
-              <div class="grid grid-cols-4 gap-4 w-full max-w-3xl mb-6">
+              <div class="grid grid-cols-5 gap-4 w-full max-w-4xl mb-6">
                 {getRankedStudents().map((s, idx) => {
                   const total = scores[s.id];
                   const isWinner = idx === 0;
