@@ -69,43 +69,35 @@
     );
 
     const STUDENTS = [
-      { id: 0, name: "Joseline", text: "text-pink-500", border: "border-pink-300", bgLight: "bg-pink-50" },
-      { id: 1, name: "Aina", text: "text-purple-500", border: "border-purple-300", bgLight: "bg-purple-50" },
-      { id: 2, name: "Suraiya", text: "text-amber-500", border: "border-amber-300", bgLight: "bg-amber-50" },
-      { id: 3, name: "Izzuandie", text: "text-blue-500", border: "border-blue-300", bgLight: "bg-blue-50" },
-      { id: 4, name: "Dasuki", text: "text-emerald-500", border: "border-emerald-300", bgLight: "bg-emerald-50" }
+      { id: 0, name: "Aina", text: "text-purple-500", border: "border-purple-300", bgLight: "bg-purple-50" },
+      { id: 1, name: "Suraiya", text: "text-amber-500", border: "border-amber-300", bgLight: "bg-amber-50" },
+      { id: 2, name: "Izzuandie", text: "text-blue-500", border: "border-blue-300", bgLight: "bg-blue-50" },
+      { id: 3, name: "Dasuki", text: "text-emerald-500", border: "border-emerald-300", bgLight: "bg-emerald-50" }
     ];
 
     const STUDENT_QUESTIONS = {
       0: [
-        ["Ali", "baca", "buku"], ["Kucing", "minum", "susu"], ["Kakak", "sapu", "sampah"], ["Ayam", "makan", "padi"], ["Ibu", "potong", "kek"],
-        ["Adik", "beli", "roti"], ["Bapa", "basuh", "tangan"], ["Siti", "main", "bola"], ["Raju", "buka", "pintu"], ["Nenek", "masak", "sup"],
-        ["Datuk", "tanam", "pokok"], ["Kami", "main", "taman"], ["Burung", "terbang", "tinggi"], ["Ikan", "berenang", "laju"], ["Adik", "pakai", "baju"],
-        ["Ibu", "siram", "pokok"], ["Ali", "kayuh", "basikal"], ["Bapa", "minum", "kopi"], ["Kakak", "lipat", "baju"], ["Siti", "susun", "buku"],
-        ["Raju", "bawa", "beg"], ["Nenek", "beli", "buah"], ["Datuk", "pancing", "ikan"], ["Kucing", "tidur", "nyenyak"], ["Adik", "minum", "air"]
-      ],
-      1: [
         ["Ibu", "masak", "nasi"], ["Siti", "siram", "bunga"], ["Datuk", "tanam", "pokok"], ["Mimi", "gosok", "gigi"], ["Adik", "pakai", "baju"],
         ["Bapa", "pandu", "kereta"], ["Ali", "main", "padang"], ["Kucing", "makan", "ikan"], ["Kakak", "cuci", "pinggan"], ["Nenek", "jahit", "baju"],
         ["Raju", "beli", "pensel"], ["Kami", "baca", "buku"], ["Burung", "buat", "sarang"], ["Adik", "lompat", "tinggi"], ["Ibu", "goreng", "ayam"],
         ["Bapa", "baca", "akhbar"], ["Siti", "susun", "kasut"], ["Ali", "sapu", "lantai"], ["Kakak", "buat", "kek"], ["Nenek", "siram", "sayur"],
         ["Datuk", "bakar", "sate"], ["Raju", "main", "layang"], ["Kucing", "kejar", "tikus"], ["Adik", "senyum", "manis"], ["Ibu", "beli", "susu"]
       ],
-      2: [
+      1: [
         ["Bapa", "cuci", "kereta"], ["Raju", "makan", "roti"], ["Nenek", "beli", "ikan"], ["Sara", "lukis", "gambar"], ["Burung", "terbang", "tinggi"],
         ["Ibu", "kemas", "rumah"], ["Ali", "tendang", "bola"], ["Kucing", "panjat", "pokok"], ["Kakak", "sidai", "baju"], ["Datuk", "minum", "teh"],
         ["Siti", "potong", "buah"], ["Kami", "nyanyi", "lagu"], ["Adik", "lukis", "bunga"], ["Ibu", "basuh", "baju"], ["Bapa", "baiki", "lampu"],
         ["Raju", "bawa", "bola"], ["Nenek", "sapu", "halaman"], ["Datuk", "baca", "surat"], ["Kucing", "minum", "air"], ["Adik", "tidur", "awal"],
         ["Kakak", "bantu", "ibu"], ["Siti", "tulis", "surat"], ["Ali", "buka", "tingkap"], ["Ibu", "masak", "mi"], ["Bapa", "beli", "buah"]
       ],
-      3: [
+      2: [
         ["Adik", "main", "bola"], ["Kami", "naik", "bas"], ["Abang", "tulis", "surat"], ["Bapa", "minum", "kopi"], ["Ali", "kayuh", "basikal"],
         ["Ibu", "goreng", "ikan"], ["Siti", "cuci", "tangan"], ["Kucing", "lari", "laju"], ["Kakak", "beli", "tudung"], ["Datuk", "duduk", "diam"],
         ["Raju", "lukis", "rumah"], ["Nenek", "makan", "ubat"], ["Adik", "basuh", "muka"], ["Ibu", "lipat", "selimut"], ["Bapa", "tanam", "bunga"],
         ["Ali", "tangkap", "bola"], ["Siti", "susun", "kerusi"], ["Raju", "panjat", "bukit"], ["Kucing", "tangkap", "tikus"], ["Adik", "buka", "buku"],
         ["Kakak", "sapu", "bilik"], ["Datuk", "minum", "air"], ["Nenek", "tanam", "serai"], ["Kami", "jalan", "kaki"], ["Bapa", "bawa", "lori"]
       ],
-      4: [
+      3: [
         ["Bapa", "beli", "kereta"], ["Kucing", "gigit", "tikus"], ["Ibu", "basuh", "baju"], ["Dasuki", "makan", "nasi"], ["Adik", "minum", "susu"],
         ["Abang", "bawa", "lori"], ["Kami", "main", "bola"], ["Datuk", "baca", "buku"], ["Nenek", "anyam", "tikar"], ["Burung", "terbang", "jauh"],
         ["Lembu", "makan", "rumput"], ["Siti", "sapu", "lantai"], ["Raju", "petik", "bunga"], ["Guru", "ajar", "murid"], ["Dasuki", "lukis", "awan"],
@@ -133,8 +125,8 @@
         return init;
       });
 
-      const [scores, setScores] = useState({ 0: 0, 1: 0, 2: 0, 3: 0, 4: 0 });
-      const [positions, setPositions] = useState({ 0: 0, 1: 0, 2: 0, 3: 0, 4: 0 });
+      const [scores, setScores] = useState({ 0: 0, 1: 0, 2: 0, 3: 0 });
+      const [positions, setPositions] = useState({ 0: 0, 1: 0, 2: 0, 3: 0 });
       
       const [timeLeft, setTimeLeft] = useState(1200);
       const [timerActive, setTimerActive] = useState(false);
@@ -333,9 +325,9 @@
 
           {/* BAHAGIAN KUIZ (DIRENDAHKAN) */}
           {!gameEnded ? (
-            <div class="grid grid-cols-6 gap-2.5 flex-1 min-h-0">
+            <div class="grid grid-cols-5 gap-2.5 flex-1 min-h-0">
               
-              <main class="col-span-5 grid grid-cols-5 gap-2 h-full overflow-hidden">
+              <main class="col-span-4 grid grid-cols-4 gap-2 h-full overflow-hidden">
                 {STUDENTS.map((s) => {
                   const state = playerStates[s.id];
                   const currentWords = STUDENT_QUESTIONS[s.id][state.qIdx];
@@ -468,7 +460,7 @@
                 Tahniah kepada semua murid yang telah berusaha menyusun ayat dengan hebat!
               </p>
 
-              <div class="grid grid-cols-5 gap-4 w-full max-w-4xl mb-6">
+              <div class="grid grid-cols-4 gap-4 w-full max-w-4xl mb-6">
                 {getRankedStudents().map((s, idx) => {
                   const total = scores[s.id];
                   const isWinner = idx === 0;
