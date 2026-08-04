@@ -2,18 +2,26 @@
 <html lang="ms">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>KUIZ EJAAN</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KUIZ EJAAN CERIA (16:9)</title>
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   
+  <!-- Fonts Kanak-Kanak: Fredoka -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <!-- React & ReactDOM -->
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   
   <!-- Babel compiler for JSX -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 
   <!-- Firebase App SDKs -->
   <script type="module">
@@ -40,49 +48,80 @@
   </script>
 
   <style>
-    /* Halang sebarang scroll dan touch gesture pada keseluruhan body */
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background-color: #0f172a; 
-      touch-action: none;
-      user-select: none;
-      -webkit-user-select: none;
+    /* Tulisan Utama */
+    body {
+        font-family: 'Fredoka', sans-serif;
+        background-color: #0f172a; 
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        overflow: hidden; 
     }
 
-    /* Memaksa paparan muat-muat dengan skrin Smartboard (Dynamic Viewport) */
-    .fit-16-9 {
-      width: 100vw;
-      height: 100vh;
-      height: 100dvh; /* Automatik tolak saiz URL bar Chrome */
-      max-height: 100dvh;
-      overflow: hidden;
-      margin: auto;
-      position: relative;
-    }
-
-    .custom-scrollbar::-webkit-scrollbar { width: 5px; }
-    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    /* Scrollbar Comel */
+    .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.4); border-radius: 10px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #facc15; border-radius: 10px; border: 2px solid white; }
     
-    @keyframes spin-slow {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
+    /* Animasi Latar Belakang Ceria */
+    .bg-animated-gradient {
+        background: linear-gradient(-45deg, #7dd3fc, #fde047, #f9a8d4, #c084fc);
+        background-size: 400% 400%;
+        animation: gradientBG 15s ease infinite;
     }
-    .animate-spin-slow {
-      animation: spin-slow 8s linear infinite;
+
+    @keyframes gradientBG {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    /* Animasi Bouncing/Berputar */
+    @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .animate-spin-slow { animation: spin-slow 8s linear infinite; }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .animate-float { animation: float 3s ease-in-out infinite; }
+
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(-3deg); }
+      50% { transform: rotate(3deg); }
+    }
+    .animate-wiggle { animation: wiggle 2s ease-in-out infinite; }
+
+    /* Bar Pemasa Berjalur (Striped) */
+    .bg-stripes {
+        background-image: linear-gradient(45deg, rgba(255,255,255,0.3) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0.3) 75%, transparent 75%, transparent);
+        background-size: 20px 20px;
+        animation: moveStripes 1s linear infinite;
+    }
+    @keyframes moveStripes { from { background-position: 0 0; } to { background-position: 20px 20px; } }
+
+    /* 16:9 Tetap */
+    .ratio-16-9-container {
+        width: 100vw;
+        height: 56.25vw; 
+        max-height: 100vh;
+        max-width: 177.78vh; 
+        margin: auto;
+        position: relative;
     }
   </style>
 </head>
-<body class="font-sans antialiased selection:bg-none flex items-center justify-center">
+<body class="text-slate-800 antialiased selection:bg-none">
 
-  <div id="root" class="w-full h-full flex items-center justify-center"></div>
+  <!-- Akar Aplikasi React -->
+  <div id="root" class="ratio-16-9-container bg-animated-gradient shadow-2xl flex flex-col p-2 lg:p-4 rounded-none md:rounded-[2rem] border-0 md:border-[12px] border-white/60 overflow-hidden relative">
+      <!-- Awan Hiasan -->
+      <div class="absolute top-4 left-10 text-white opacity-40 text-6xl animate-float">☁️</div>
+      <div class="absolute bottom-10 right-10 text-white opacity-40 text-7xl animate-float" style="animation-delay: 1.5s;">☁️</div>
+  </div>
 
-  <!-- Audio Synthesizer BGM Script using Web Audio API -->
   <script>
     class BackgroundMusic {
       constructor() {
@@ -90,47 +129,35 @@
         this.isPlaying = false;
         this.timer = null;
       }
-
       init() {
-        if (!this.ctx) {
-          this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-        }
+        if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
       }
-
       play() {
         this.init();
         if (this.ctx.state === 'suspended') this.ctx.resume();
         this.isPlaying = true;
         
-        const notes = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25];
+        const notes = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25]; // Melodi ceria
         let step = 0;
 
         const playNextNote = () => {
           if (!this.isPlaying) return;
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
-
           osc.type = 'sine';
-          const noteFreq = notes[step % notes.length];
-          osc.frequency.setValueAtTime(noteFreq, this.ctx.currentTime);
-
+          osc.frequency.setValueAtTime(notes[step % notes.length], this.ctx.currentTime);
           gain.gain.setValueAtTime(0, this.ctx.currentTime);
           gain.gain.linearRampToValueAtTime(0.05, this.ctx.currentTime + 0.1);
           gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.6);
-
           osc.connect(gain);
           gain.connect(this.ctx.destination);
-
           osc.start();
           osc.stop(this.ctx.currentTime + 0.6);
-
           step = (step + Math.floor(Math.random() * 2) + 1) % notes.length;
           this.timer = setTimeout(playNextNote, 400);
         };
-
         playNextNote();
       }
-
       stop() {
         this.isPlaying = false;
         if (this.timer) clearTimeout(this.timer);
@@ -143,25 +170,6 @@
   <script type="text/babel">
     const { useState, useEffect } = React;
 
-    // Komponen Ikon Pantas (Mengelakkan lag pada DOM)
-    const Icon = ({ d, className, fill = "none" }) => (
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} dangerouslySetInnerHTML={{ __html: d }} />
-    );
-    const ICONS = {
-      star: '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
-      home: '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
-      volOn: '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>',
-      volOff: '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" x2="17" y1="9" y2="15"/><line x1="17" x2="23" y1="9" y2="15"/>',
-      play: '<polygon points="5 3 19 12 5 21 5 3"/>',
-      check: '<polyline points="20 6 9 17 4 12"/>',
-      x: '<line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/>',
-      clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
-      delete: '<path d="M20 5H9l-7 7 7 7h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Z"/><line x1="18" x2="12" y1="9" y2="15"/><line x1="12" x2="18" y1="9" y2="15"/>',
-      hourglass: '<path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V2"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/>',
-      trophy: '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-1 1.05-1.55.22-2.7 1.5-2.9 3.05-.05.35.2.65.55.65h10.7c.35 0 .6-.3.55-.65-.2-1.55-1.35-2.83-2.9-3.05-.53-.07-1-.5-1-1.05v-2.34"/><path d="M12 15c3.87 0 7-3.13 7-7V4H5v4c0 3.87 3.13 7 7 7Z"/>',
-      rotateCcw: '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>'
-    };
-
     const INITIAL_STUDENTS = [
       { id: 1, name: 'Shakeel', score: 0, history: [] },
       { id: 2, name: 'Aiman', score: 0, history: [] },
@@ -171,23 +179,31 @@
       { id: 6, name: 'Natalie', score: 0, history: [] }
     ];
 
-    const WORDS = [
-      { word: "BUKU", type: "KVKV", emoji: "📖" }, { word: "KEK", type: "KVK", emoji: "🍰" }, { word: "KAPAL", type: "KVKVK", emoji: "🚢" },
-      { word: "BOLA", type: "KVKV", emoji: "⚽" }, { word: "BEG", type: "KVK", emoji: "🎒" }, { word: "KASUT", type: "KVKVK", emoji: "👟" },
-      { word: "MEJA", type: "KVKV", emoji: "🪑" }, { word: "CAT", type: "KVK", emoji: "🎨" }, { word: "BOTOL", type: "KVKVK", emoji: "🍼" },
-      { word: "PASU", type: "KVKV", emoji: "🪴" }, { word: "PEN", type: "KVK", emoji: "🖊️" }, { word: "POKOK", type: "KVKVK", emoji: "🌳" },
-      { word: "LORI", type: "KVKV", emoji: "🚛" }, { word: "BOT", type: "KVK", emoji: "🚤" }, { word: "GAGAK", type: "KVKVK", emoji: "🐦‍⬛" },
-      { word: "ROTI", type: "KVKV", emoji: "🍞" }, { word: "JEM", type: "KVK", emoji: "🍯" }, { word: "KATAK", type: "KVKVK", emoji: "🐸" },
-      { word: "SUSU", type: "KVKV", emoji: "🥛" }, { word: "BAS", type: "KVK", emoji: "🚌" }, { word: "BAKUL", type: "KVKVK", emoji: "🧺" },
-      { word: "TOPI", type: "KVKV", emoji: "🧢" }, { word: "GAM", type: "KVK", emoji: "🧴" }, { word: "SIPUT", type: "KVKVK", emoji: "🐌" },
-      { word: "GIGI", type: "KVKV", emoji: "🦷" }, { word: "JIP", type: "KVK", emoji: "🚙" }, { word: "LILIN", type: "KVKVK", emoji: "🕯️" },
-      { word: "KAKI", type: "KVKV", emoji: "🦶" }, { word: "TIN", type: "KVK", emoji: "🥫" }, { word: "KIPAS", type: "KVKVK", emoji: "🪭" }
+    // SENARAI 15 PERKATAAN DIKEMAS KINI (Diduplikasi untuk Kiri & Kanan)
+    const BASE_WORDS = [
+      { word: "BOLA", image: "bola.png" },
+      { word: "BUKU", image: "buku.png" },
+      { word: "LORI", image: "lori.png" },
+      { word: "BAJU", image: "baju.png" },
+      { word: "ROTI", image: "roti.png" },
+      { word: "PASU", image: "pasu.png" },
+      { word: "KATAK", image: "katak.png" },
+      { word: "BOTOL", image: "botol.png" },
+      { word: "KEK", image: "kek.png" },
+      { word: "GIGI", image: "gigi.png" },
+      { word: "MATA", image: "mata.png" },
+      { word: "PENSEL", image: "pensel.png" },
+      { word: "BEG", image: "beg.png" },
+      { word: "TIKUS", image: "tikus.png" },
+      { word: "BIRU", image: "biru.png" }
     ];
 
-    const WORDS_P1 = WORDS.filter((_, i) => i % 2 === 0);
-    const WORDS_P2 = WORDS.filter((_, i) => i % 2 === 1);
-    const P1_STUDENT_INDICES = [0, 2, 4]; 
-    const P2_STUDENT_INDICES = [1, 3, 5]; 
+    const WORDS_P1 = [...BASE_WORDS]; // 15 soalan Kiri
+    const WORDS_P2 = [...BASE_WORDS]; // 15 soalan Kanan (Set yang sama)
+
+    const P1_STUDENT_INDICES = [0, 2, 4]; // Kiri: Shakeel, Athena, Alex
+    const P2_STUDENT_INDICES = [1, 3, 5]; // Kanan: Aiman, Zaim, Natalie
+
     const TIME_PER_TURN = 60; 
 
     function App() {
@@ -203,29 +219,29 @@
         studentIdxInList: 0, wordIdx: 0, timeLeft: TIME_PER_TURN, input: '', feedback: null, isFinished: false 
       });
 
-      // Pointer event wrapper untuk jadikan sentuhan super pantas
-      const withInstantTouch = (callback) => (e) => {
-        e.preventDefault(); 
-        e.stopPropagation();
-        callback(e);
-      };
+      useEffect(() => {
+        if (window.lucide) { window.lucide.createIcons(); }
+      });
 
       const toggleMusic = () => {
-        if (musicOn) {
-          window.bgMusic.stop();
-          setMusicOn(false);
-        } else {
-          window.bgMusic.play();
-          setMusicOn(true);
-        }
+        if (musicOn) { window.bgMusic.stop(); setMusicOn(false); } 
+        else { window.bgMusic.play(); setMusicOn(true); }
       };
 
       useEffect(() => {
         let timer;
         if (gameState === 'playing') {
           timer = setInterval(() => {
-            setP1State(prev => prev.isFinished || prev.feedback !== null || prev.timeLeft <= 0 ? prev : { ...prev, timeLeft: prev.timeLeft - 1 });
-            setP2State(prev => prev.isFinished || prev.feedback !== null || prev.timeLeft <= 0 ? prev : { ...prev, timeLeft: prev.timeLeft - 1 });
+            setP1State(prev => {
+              if (prev.isFinished || prev.feedback !== null) return prev;
+              if (prev.timeLeft > 0) return { ...prev, timeLeft: prev.timeLeft - 1 };
+              return prev;
+            });
+            setP2State(prev => {
+              if (prev.isFinished || prev.feedback !== null) return prev;
+              if (prev.timeLeft > 0) return { ...prev, timeLeft: prev.timeLeft - 1 };
+              return prev;
+            });
           }, 1000);
         }
         return () => clearInterval(timer);
@@ -240,7 +256,7 @@
 
       useEffect(() => {
         if (gameState === 'playing' && p1State.isFinished && p2State.isFinished) {
-          setTimeout(() => setGameState('ended'), 1500);
+          setTimeout(() => { setGameState('ended'); }, 1500);
         }
       }, [p1State.isFinished, p2State.isFinished, gameState]);
 
@@ -252,16 +268,13 @@
         if (musicOn) window.bgMusic.play();
       };
 
-      // Disambung ke muka utama pelayar (index.html)
-      const goHome = () => {
-        window.location.href = 'index.html';
-      };
+      const goHome = () => { window.bgMusic.stop(); window.location.href = 'index.html'; };
+      const forceEndGame = () => { setGameState('ended'); };
 
       const speakWord = (text) => {
         if ('speechSynthesis' in window) {
           const utterance = new SpeechSynthesisUtterance(text);
-          utterance.lang = 'ms-MY';
-          utterance.rate = 0.8;
+          utterance.lang = 'ms-MY'; utterance.rate = 0.8;
           window.speechSynthesis.speak(utterance);
         }
       };
@@ -269,9 +282,7 @@
       const handleKeyPress = (player, key) => {
         const setState = player === 'p1' ? setP1State : setP2State;
         const currentState = player === 'p1' ? p1State : p2State;
-        
         if (currentState.feedback !== null || currentState.isFinished) return;
-        
         setState(prev => ({
           ...prev,
           input: key === 'PADAM' ? prev.input.slice(0, -1) : prev.input + key
@@ -285,10 +296,13 @@
         if (state.feedback !== null || state.isFinished) return;
 
         const studentGlobalIdx = isP1 ? P1_STUDENT_INDICES[state.studentIdxInList] : P2_STUDENT_INDICES[state.studentIdxInList];
-        const wordObj = isP1 ? WORDS_P1[state.wordIdx] : WORDS_P2[state.wordIdx];
+        const wordList = isP1 ? WORDS_P1 : WORDS_P2;
+        const wordObj = wordList[state.wordIdx];
         
         let isCorrect = false;
-        if (!isTimeout) isCorrect = state.input.trim().toLowerCase() === wordObj.word.toLowerCase();
+        if (!isTimeout) {
+          isCorrect = state.input.trim().toLowerCase() === wordObj.word.toLowerCase();
+        }
         
         setStudents(prev => {
           const newStudents = [...prev];
@@ -300,53 +314,49 @@
           return newStudents;
         });
 
+        const feedbackVal = isTimeout ? 'timeout' : (isCorrect ? 'correct' : 'wrong');
         const setLocalState = isP1 ? setP1State : setP2State;
-        setLocalState(prev => ({ ...prev, feedback: isTimeout ? 'timeout' : (isCorrect ? 'correct' : 'wrong') }));
+        
+        setLocalState(prev => ({ ...prev, feedback: feedbackVal }));
 
         setTimeout(() => {
           setLocalState(prev => {
             const nextWordIdx = prev.wordIdx + 1;
-            if (nextWordIdx >= 15) return { ...prev, isFinished: true, feedback: null };
-            return {
-              ...prev,
-              wordIdx: nextWordIdx,
-              studentIdxInList: (prev.studentIdxInList + 1) % 3,
-              timeLeft: TIME_PER_TURN,
-              input: '',
-              feedback: null
-            };
+            if (nextWordIdx >= 15) { return { ...prev, isFinished: true, feedback: null }; }
+            return { ...prev, wordIdx: nextWordIdx, studentIdxInList: (prev.studentIdxInList + 1) % 3, timeLeft: TIME_PER_TURN, input: '', feedback: null };
           });
-        }, 2000); 
+        }, 3000);
       };
 
-      const renderKeyboard = (player, accentColor) => {
+      const renderKeyboard = (player, teamName) => {
         const state = player === 'p1' ? p1State : p2State;
         const isDisabled = state.feedback !== null || state.isFinished;
-        
         const row1 = ['Q','W','E','R','T','Y','U','I','O','P'];
         const row2 = ['A','S','D','F','G','H','J','K','L'];
         const row3 = ['Z','X','C','V','B','N','M'];
 
-        const btnClass = `bg-white border-2 border-slate-200 text-slate-700 font-black text-lg lg:text-2xl rounded-lg lg:rounded-xl w-7 h-9 lg:w-11 lg:h-12 flex items-center justify-center shadow-sm active:shadow-none active:translate-y-1 transition-all hover:bg-${accentColor}-50 hover:border-${accentColor}-300 disabled:opacity-50 touch-manipulation`;
+        // Warna Butang Mainan (Chunky)
+        const btnBaseClass = "bg-white border-b-[4px] lg:border-b-[6px] text-slate-700 font-bold text-sm lg:text-xl rounded-xl w-7 h-9 lg:w-12 lg:h-12 flex items-center justify-center transition-all disabled:opacity-50 active:border-b-0 active:translate-y-1 lg:active:translate-y-1.5";
+        const btnColorHover = teamName === 'p1' ? "border-slate-300 hover:bg-sky-100 hover:border-sky-400 hover:text-sky-700" : "border-slate-300 hover:bg-pink-100 hover:border-pink-400 hover:text-pink-700";
 
         return (
-          <div className="w-full flex flex-col gap-1 select-none">
-            <div className="flex justify-center gap-1">
+          <div className="w-full flex flex-col gap-1 lg:gap-2 mb-1 lg:mb-2 relative z-10">
+            <div className="flex justify-center gap-1 lg:gap-2">
               {row1.map(k => (
-                <button key={k} type="button" disabled={isDisabled} onPointerDown={withInstantTouch(() => handleKeyPress(player, k))} className={btnClass}>{k}</button>
+                <button key={k} type="button" disabled={isDisabled} onClick={() => handleKeyPress(player, k)} className={`${btnBaseClass} ${btnColorHover}`}>{k}</button>
               ))}
             </div>
-            <div className="flex justify-center gap-1">
+            <div className="flex justify-center gap-1 lg:gap-2">
               {row2.map(k => (
-                <button key={k} type="button" disabled={isDisabled} onPointerDown={withInstantTouch(() => handleKeyPress(player, k))} className={btnClass}>{k}</button>
+                <button key={k} type="button" disabled={isDisabled} onClick={() => handleKeyPress(player, k)} className={`${btnBaseClass} ${btnColorHover}`}>{k}</button>
               ))}
             </div>
-            <div className="flex justify-center gap-1">
+            <div className="flex justify-center gap-1 lg:gap-2">
               {row3.map(k => (
-                <button key={k} type="button" disabled={isDisabled} onPointerDown={withInstantTouch(() => handleKeyPress(player, k))} className={btnClass}>{k}</button>
+                <button key={k} type="button" disabled={isDisabled} onClick={() => handleKeyPress(player, k)} className={`${btnBaseClass} ${btnColorHover}`}>{k}</button>
               ))}
-              <button type="button" disabled={isDisabled} onPointerDown={withInstantTouch(() => handleKeyPress(player, 'PADAM'))} className="bg-red-100 border-2 border-red-200 text-red-600 font-black rounded-lg lg:rounded-xl px-2 h-9 lg:h-12 flex items-center justify-center shadow-sm active:shadow-none active:translate-y-1 transition-all hover:bg-red-200 disabled:opacity-50 touch-manipulation">
-                <Icon d={ICONS.delete} className="w-5 h-5 lg:w-6 lg:h-6" />
+              <button type="button" disabled={isDisabled} onClick={() => handleKeyPress(player, 'PADAM')} className="bg-red-50 border-b-[4px] lg:border-b-[6px] border-red-300 text-red-500 font-bold rounded-xl px-2 lg:px-4 h-9 lg:h-12 flex items-center justify-center transition-all hover:bg-red-100 active:border-b-0 active:translate-y-1 disabled:opacity-50">
+                <i data-lucide="delete" className="w-5 h-5 lg:w-6 lg:h-6"></i>
               </button>
             </div>
           </div>
@@ -355,17 +365,19 @@
 
       const renderTimerBar = (timeLeft, colorTheme) => {
         const timerPercentage = (timeLeft / TIME_PER_TURN) * 100;
-        let barColor = `bg-${colorTheme}-400`;
+        let barColor = colorTheme === 'blue' ? 'bg-sky-400' : 'bg-pink-400';
+        let iconColor = colorTheme === 'blue' ? 'text-sky-500' : 'text-pink-500';
+        
         if (timeLeft <= 15) barColor = 'bg-yellow-400';
-        if (timeLeft <= 5) barColor = 'bg-red-500';
+        if (timeLeft <= 5) { barColor = 'bg-red-500'; iconColor = 'text-red-500 animate-bounce'; }
         
         return (
-          <div className="flex items-center gap-2 mb-1 lg:mb-2 bg-white/50 p-1 lg:p-2 rounded-full border border-white w-full">
-            <Icon d={ICONS.hourglass} className={`w-5 h-5 lg:w-6 lg:h-6 ${timeLeft <= 10 ? 'text-red-500 animate-spin' : `text-${colorTheme}-500`}`} />
-            <div className="flex-1 bg-white h-3 lg:h-4 rounded-full overflow-hidden shadow-inner border border-slate-200">
-              <div className={`h-full transition-all duration-1000 ease-linear ${barColor}`} style={{ width: `${timerPercentage}%` }} />
+          <div className="flex items-center gap-2 mb-2 lg:mb-4 bg-white/70 backdrop-blur-sm p-1.5 lg:p-2 rounded-2xl border-4 border-white w-full shadow-sm relative z-10">
+            <i data-lucide="clock" className={`w-6 h-6 lg:w-8 lg:h-8 ${iconColor} fill-white`}></i>
+            <div className="flex-1 bg-slate-100 h-5 lg:h-6 rounded-xl overflow-hidden shadow-inner border-2 border-slate-200">
+              <div className={`h-full transition-all duration-1000 ease-linear ${barColor} bg-stripes rounded-xl`} style={{ width: `${timerPercentage}%` }} />
             </div>
-            <span className="font-black text-slate-700 w-8 lg:w-12 text-center text-xs lg:text-sm">{timeLeft}s</span>
+            <span className="font-black text-slate-700 w-12 text-center text-md lg:text-xl">{timeLeft}s</span>
           </div>
         );
       };
@@ -377,216 +389,246 @@
       const sortedStudents = [...students].sort((a, b) => b.score - a.score);
 
       return (
-        <div className="fit-16-9 bg-gradient-to-br from-cyan-300 via-pink-300 to-purple-400 text-slate-800 p-2 flex flex-col overflow-hidden">
+        <div className="w-full h-full flex flex-col relative p-2 lg:p-4 overflow-hidden z-10">
           
-          <header className="w-full flex justify-between items-center mb-2 bg-white/90 backdrop-blur-md p-2 lg:p-3 rounded-2xl border-2 border-white relative shrink-0 shadow-sm">
-            <div className="flex items-center gap-2">
-              <button 
-                onPointerDown={withInstantTouch(goHome)} 
-                className="bg-sky-100 hover:bg-sky-200 text-sky-600 p-2 rounded-xl transition transform active:scale-95 flex items-center justify-center border-2 border-sky-300 touch-manipulation"
-              >
-                <Icon d={ICONS.home} className="w-5 h-5 lg:w-6 lg:h-6" />
-              </button>
-              <button 
-                onPointerDown={withInstantTouch(toggleMusic)}
-                className="bg-purple-100 hover:bg-purple-200 text-purple-600 p-2 rounded-xl border-2 border-purple-300 transition touch-manipulation"
-              >
-                <Icon d={musicOn ? ICONS.volOn : ICONS.volOff} className="w-5 h-5 lg:w-6 lg:h-6" />
+          {/* HEADER CERIA */}
+          <header className="w-full flex justify-between items-center mb-2 lg:mb-4 bg-white/90 backdrop-blur-md p-2 lg:p-3 rounded-[2rem] border-[6px] border-white shrink-0 shadow-[0_8px_0_0_rgba(255,255,255,0.4)] z-10">
+            <div className="w-28 lg:w-36 flex items-center gap-2">
+              {gameState !== 'start' && (
+                <button onClick={goHome} className="bg-sky-400 hover:bg-sky-300 text-white p-2.5 rounded-2xl transition transform hover:scale-105 active:scale-95 flex items-center justify-center border-b-4 border-sky-600 shadow-sm" title="Utama">
+                  <i data-lucide="home" className="w-6 h-6 lg:w-7 lg:h-7 fill-current"></i>
+                </button>
+              )}
+              <button onClick={toggleMusic} className="bg-purple-400 hover:bg-purple-300 text-white p-2.5 rounded-2xl border-b-4 border-purple-600 shadow-sm transition transform hover:scale-105 active:scale-95" title="Muzik">
+                <i data-lucide={musicOn ? "volume-2" : "volume-x"} className="w-6 h-6 lg:w-7 lg:h-7 fill-current"></i>
               </button>
             </div>
             
-            <h1 className="text-2xl lg:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-600 tracking-wider flex items-center justify-center gap-2 pointer-events-none">
-              <Icon d={ICONS.star} className="text-yellow-400 w-6 h-6 lg:w-8 lg:h-8 fill-current animate-spin-slow" />
-              KUIZ EJAAN
-              <Icon d={ICONS.star} className="text-yellow-400 w-6 h-6 lg:w-8 lg:h-8 fill-current animate-spin-slow" />
+            <h1 className="text-2xl lg:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 tracking-wider flex items-center justify-center gap-3 flex-1 drop-shadow-sm">
+              <span className="animate-wiggle text-3xl lg:text-5xl">🎨</span>
+              KUIZ EJAAN CERIA
+              <span className="animate-wiggle text-3xl lg:text-5xl" style={{animationDelay: '1s'}}>🎈</span>
             </h1>
-            <div className="w-16"></div>
+
+            <div className="w-28 lg:w-36 flex justify-end">
+              {gameState === 'playing' && (
+                <button onClick={forceEndGame} className="bg-red-500 hover:bg-red-400 text-white px-4 py-2 rounded-2xl transition transform hover:scale-105 active:translate-y-1 active:border-b-0 flex items-center justify-center border-b-4 border-red-700 font-bold text-sm lg:text-base gap-2 shadow-sm">
+                  <i data-lucide="stop-circle" className="w-5 h-5 lg:w-6 lg:h-6 fill-current"></i> TAMAT
+                </button>
+              )}
+            </div>
           </header>
 
-          <div className="flex-1 w-full flex flex-row gap-2 overflow-hidden min-h-0">
+          <div className="flex-1 w-full flex flex-row gap-3 overflow-hidden relative">
             
+            {}
             {gameState === 'start' && (
-              <div className="w-full bg-white/95 rounded-[2rem] border-4 border-white h-full flex flex-col justify-center items-center p-6 text-center overflow-y-auto">
-                <div className="flex gap-4 mb-2 animate-bounce select-none pointer-events-none">
-                  <span className="text-[60px] lg:text-[80px]">👦</span>
-                  <span className="text-[60px] lg:text-[80px]">👧</span>
+              <div className="w-full bg-white/95 rounded-[3rem] shadow-[0_12px_0_0_rgba(255,255,255,0.5)] border-8 border-yellow-300 h-full flex flex-col justify-center items-center p-4 lg:p-8 text-center absolute inset-0 z-20 overflow-hidden">
+                <div className="absolute top-10 left-20 text-6xl animate-wiggle">🦄</div>
+                <div className="absolute bottom-10 right-20 text-6xl animate-bounce">🚀</div>
+                <div className="absolute top-20 right-32 text-5xl animate-float">🌟</div>
+                <div className="absolute bottom-20 left-32 text-5xl animate-float" style={{animationDelay: '1s'}}>🍕</div>
+
+                <div className="flex gap-6 mb-4 animate-bounce">
+                  <div className="bg-blue-100 p-4 rounded-full border-4 border-blue-300 shadow-md"><span className="text-[60px] lg:text-[80px] leading-none">👦</span></div>
+                  <div className="bg-pink-100 p-4 rounded-full border-4 border-pink-300 shadow-md"><span className="text-[60px] lg:text-[80px] leading-none">👧</span></div>
                 </div>
-                <h2 className="text-3xl lg:text-5xl font-black mb-4 text-purple-600">Selamat Datang!</h2>
-                <p className="text-lg lg:text-2xl text-slate-600 mb-6 max-w-2xl font-bold leading-relaxed">
-                  Kumpulan Kiri: <span className="text-blue-500">Shakeel, Athena, Alex</span><br/>
-                  Kumpulan Kanan: <span className="text-pink-500">Aiman, Zaim, Natalie</span><br/>
-                  Masa: <span className="text-red-500">15 MINIT</span> (Tepat 60 saat/soalan).
-                </p>
-                <button 
-                  onPointerDown={withInstantTouch(startGame)}
-                  className="bg-green-500 text-white text-xl lg:text-3xl font-black py-4 px-10 rounded-full shadow-[0_6px_0_0_rgba(21,128,61,1)] active:shadow-none active:translate-y-1 transform transition flex items-center gap-3 border-4 border-green-300 touch-manipulation"
-                >
-                  <Icon d={ICONS.play} className="w-6 h-6 lg:w-8 lg:h-8 fill-current" />
-                  MULA SEKARANG!
+                
+                <h2 className="text-4xl lg:text-6xl font-black mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 drop-shadow-sm">JOM MAIN KUIZ!</h2>
+                
+                <div className="bg-slate-50 border-4 border-slate-200 rounded-3xl p-6 mb-8 max-w-2xl shadow-inner relative">
+                    <p className="text-lg lg:text-2xl text-slate-600 font-bold leading-relaxed">
+                    Kumpulan Kiri: <span className="text-sky-500 bg-sky-100 px-3 py-1 rounded-xl">Shakeel, Athena, Alex</span><br/><br/>
+                    Kumpulan Kanan: <span className="text-pink-500 bg-pink-100 px-3 py-1 rounded-xl">Aiman, Zaim, Natalie</span><br/><br/>
+                    <span className="text-orange-500 bg-orange-100 px-4 py-2 rounded-full border-2 border-orange-300 flex items-center justify-center gap-2 w-max mx-auto mt-2">
+                        <i data-lucide="clock" className="w-6 h-6"></i> 60 saat / soalan
+                    </span>
+                    </p>
+                </div>
+
+                <button onClick={startGame} className="bg-green-500 hover:bg-green-400 text-white text-2xl lg:text-4xl font-black py-4 px-12 rounded-[2rem] shadow-[0_8px_0_0_#15803d] active:shadow-none active:translate-y-2 transition flex items-center gap-3 border-4 border-green-300 z-10">
+                  <i data-lucide="play" className="w-8 h-8 lg:w-10 lg:h-10 fill-current"></i> MULA SEKARANG!
                 </button>
               </div>
             )}
 
+            {}
             {gameState === 'playing' && (
               <>
-                {/* ----------------- PLAYER 1 ZONE (KIRI) ----------------- */}
-                <div className="w-[40%] bg-blue-50 rounded-[1.5rem] lg:rounded-[2rem] border-4 lg:border-8 border-blue-200 relative flex flex-col p-2 overflow-hidden min-h-0">
+                {/* ----------------- KUMPULAN KIRI (42%) - TEMA BIRU CERIA ----------------- */}
+                <div className="w-[42%] bg-gradient-to-b from-sky-50 to-sky-200 rounded-[2.5rem] border-[8px] border-sky-300 shadow-[0_8px_0_0_#7dd3fc] relative flex flex-col p-3 lg:p-4 overflow-hidden h-full">
+                  <div className="absolute top-2 left-2 text-4xl opacity-20">☁️</div>
+                  <div className="absolute bottom-2 right-2 text-4xl opacity-20">✈️</div>
+
                   {p1State.isFinished ? (
                     <div className="flex-1 flex flex-col items-center justify-center text-center animate-pulse">
-                      <div className="bg-blue-100 p-6 rounded-full mb-4"><Icon d={ICONS.check} className="w-16 h-16 lg:w-20 lg:h-20 text-blue-500" /></div>
-                      <h2 className="text-3xl lg:text-4xl font-black text-blue-600 mb-2">HEBAT!</h2>
-                      <p className="text-lg lg:text-xl font-bold text-slate-500">Menunggu rakan di sebelah...</p>
+                      <div className="bg-sky-100 p-6 rounded-full mb-4 border-4 border-sky-400 shadow-md"><i data-lucide="check" className="w-20 h-20 text-sky-500" strokeWidth={4}></i></div>
+                      <h2 className="text-4xl font-black text-sky-600 mb-2">SIAP!</h2>
+                      <p className="text-lg font-bold text-slate-500 bg-white/50 px-4 py-2 rounded-full">Tunggu rakan sebelah...</p>
                     </div>
                   ) : (
                     <>
-                      {/* Flex-1 Scrollable Area: Segala benda DITOLAK masuk sini supaya butang HANTAR kekal di bawah */}
-                      <div className="flex-1 w-full flex flex-col min-h-0 overflow-y-auto overflow-x-hidden custom-scrollbar pr-1 pb-1">
-                        
-                        {p1State.feedback && (
-                          <div className={`absolute inset-0 z-50 flex flex-col items-center justify-center backdrop-blur-sm bg-white/95 ${p1State.feedback === 'correct' ? 'text-green-500' : 'text-red-500'}`}>
-                            {p1State.feedback === 'correct' ? (
-                              <>
-                                <div className="bg-green-100 p-4 lg:p-6 rounded-full mb-2 lg:mb-4 animate-bounce"><Icon d={ICONS.check} className="w-16 h-16 lg:w-24 lg:h-24" /></div>
-                                <h2 className="text-4xl lg:text-5xl font-black mb-2">PANDAI!</h2>
-                                <p className="text-xl lg:text-2xl font-bold bg-green-500 text-white px-4 lg:px-6 py-1 lg:py-2 rounded-full">+2 Markah</p>
-                              </>
-                            ) : p1State.feedback === 'timeout' ? (
-                              <>
-                                <div className="bg-orange-100 p-4 lg:p-6 rounded-full mb-2 lg:mb-4"><Icon d={ICONS.clock} className="w-16 h-16 lg:w-24 lg:h-24 text-orange-500" /></div>
-                                <h2 className="text-3xl lg:text-5xl font-black mb-2 text-orange-500">MASA TAMAT!</h2>
-                                <p className="text-xl lg:text-2xl font-bold text-slate-700">Jawapan: <span className="text-blue-600 text-3xl lg:text-4xl">{word1.word}</span></p>
-                              </>
-                            ) : (
-                              <>
-                                <div className="bg-red-100 p-4 lg:p-6 rounded-full mb-2 lg:mb-4"><Icon d={ICONS.x} className="w-16 h-16 lg:w-24 lg:h-24" /></div>
-                                <h2 className="text-3xl lg:text-5xl font-black mb-2">CUBA LAGI!</h2>
-                                <p className="text-xl lg:text-2xl font-bold text-slate-700">Jawapan: <span className="text-blue-600 text-3xl lg:text-4xl">{word1.word}</span></p>
-                              </>
-                            )}
-                          </div>
-                        )}
+                      {/* Maklum Balas Kiri */}
+                      {p1State.feedback && (
+                        <div className={`absolute inset-0 z-50 flex flex-col items-center justify-center backdrop-blur-md bg-white/80 rounded-[2rem]
+                          ${p1State.feedback === 'correct' ? 'text-green-500' : 'text-red-500'}`}>
+                          {p1State.feedback === 'correct' ? (
+                            <div className="flex flex-col items-center animate-bounce">
+                              <div className="bg-green-100 p-6 rounded-full mb-2 border-4 border-green-400 shadow-lg"><span className="text-6xl">🌟</span></div>
+                              <h2 className="text-5xl font-black mb-1 drop-shadow-md">PANDAI!</h2>
+                              <p className="text-2xl font-black bg-green-500 text-white px-6 py-2 rounded-full border-4 border-green-300 shadow-md">+2 Markah</p>
+                            </div>
+                          ) : p1State.feedback === 'timeout' ? (
+                            <div className="flex flex-col items-center animate-wiggle">
+                              <div className="bg-orange-100 p-6 rounded-full mb-2 border-4 border-orange-400 shadow-lg"><span className="text-6xl">⏰</span></div>
+                              <h2 className="text-4xl font-black mb-2 text-orange-500 drop-shadow-md">ALAMAK, MASA TAMAT!</h2>
+                              <div className="bg-white p-4 rounded-3xl border-4 border-dashed border-orange-300 shadow-md">
+                                <p className="text-xl font-bold text-slate-500 mb-1">Jawapan:</p>
+                                <p className="text-sky-600 text-4xl font-black">{word1.word}</p>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="flex flex-col items-center animate-wiggle">
+                              <div className="bg-red-100 p-6 rounded-full mb-2 border-4 border-red-400 shadow-lg"><span className="text-6xl">❌</span></div>
+                              <h2 className="text-4xl font-black mb-2 drop-shadow-md">CUBA LAGI!</h2>
+                              <div className="bg-white p-4 rounded-3xl border-4 border-dashed border-red-300 shadow-md">
+                                <p className="text-xl font-bold text-slate-500 mb-1">Jawapan:</p>
+                                <p className="text-sky-600 text-4xl font-black">{word1.word}</p>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
 
-                        {renderTimerBar(p1State.timeLeft, 'blue')}
+                      {renderTimerBar(p1State.timeLeft, 'blue')}
 
-                        <div className="w-full flex justify-between items-center mb-1 gap-1">
-                           <span className="bg-blue-200 text-blue-800 px-2 lg:px-3 py-1 rounded-xl font-bold whitespace-nowrap shadow-sm text-xs lg:text-sm">S: {p1State.wordIdx + 1}/15</span>
-                           <div className="bg-blue-600 text-white px-3 lg:px-4 py-1 rounded-xl font-black text-base lg:text-xl flex-1 text-center shadow-sm truncate">{activeStudent1.name}</div>
+                      <div className="flex-1 flex flex-col items-center justify-start w-full relative z-10">
+                        <div className="w-full flex justify-between items-center mb-1 gap-2">
+                           <span className="bg-white border-2 border-sky-300 text-sky-700 px-4 py-2 rounded-2xl font-black shadow-sm text-sm lg:text-base">
+                             SOALAN: {p1State.wordIdx + 1}/15
+                           </span>
+                           <div className="bg-sky-500 text-white px-6 py-2 rounded-2xl font-black text-xl lg:text-2xl flex-1 text-center border-b-4 border-sky-700 shadow-sm">
+                              {activeStudent1.name}
+                           </div>
                         </div>
                         
-                        <div className="flex justify-center my-1 lg:my-2 w-full">
-                          <div className="bg-white border-2 lg:border-4 border-dashed border-blue-300 rounded-[1rem] p-2 inline-block shadow-sm pointer-events-none">
-                            <div className="text-[50px] lg:text-[60px] leading-none drop-shadow-xl">{word1.emoji}</div>
-                          </div>
+                        {/* Kotak Gambar Ala Polaroid */}
+                        <div className="bg-white border-4 lg:border-[6px] border-sky-300 rounded-[2rem] p-3 my-2 shadow-[0_4px_0_0_#7dd3fc] flex items-center justify-center h-28 lg:h-36 w-[80%] mx-auto transform -rotate-1 hover:rotate-0 transition-transform">
+                          <img src={word1.image} alt={word1.word} className="max-h-full max-w-full object-contain drop-shadow-md" onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/200x200/e0f2fe/0369a1?text=${word1.word}`; }} />
                         </div>
 
-                        <div className="flex justify-center mb-1 w-full">
-                          <button onPointerDown={withInstantTouch(() => speakWord(word1.word))} className="bg-cyan-400 text-cyan-950 px-4 py-1 lg:py-2 rounded-full text-sm lg:text-base font-black shadow-[0_3px_0_0_rgba(6,182,212,1)] active:translate-y-1 flex items-center gap-1 lg:gap-2 border-2 border-cyan-200 touch-manipulation">
-                            <Icon d={ICONS.volOn} className="w-4 h-4 lg:w-5 lg:h-5" /> DENGAR
-                          </button>
-                        </div>
+                        <button onClick={() => speakWord(word1.word)} className="bg-yellow-400 hover:bg-yellow-300 text-yellow-900 px-6 py-2 rounded-full text-base font-black shadow-[0_4px_0_0_#ca8a04] active:translate-y-1 active:shadow-none mb-3 flex items-center gap-2 border-4 border-yellow-200 transition-all">
+                          <i data-lucide="volume-2" className="w-5 h-5 fill-current"></i> DENGAR
+                        </button>
 
-                        <input type="text" value={p1State.input} readOnly placeholder="EJA..." className="w-full text-center text-xl lg:text-3xl font-black py-1 lg:py-2 rounded-xl border-2 lg:border-4 border-blue-300 outline-none mb-1 lg:mb-2 uppercase tracking-[0.2em] text-slate-700 shadow-inner bg-white pointer-events-none" />
+                        <input type="text" value={p1State.input} readOnly placeholder="EJA SINI..." className="w-full text-center text-3xl font-black py-2 lg:py-3 rounded-2xl border-[4px] border-sky-400 outline-none mb-2 lg:mb-3 uppercase tracking-widest text-sky-900 shadow-inner bg-white/90 placeholder-sky-300" />
 
-                        {renderKeyboard('p1', 'blue')}
+                        {renderKeyboard('p1', 'p1')}
                       </div>
 
-                      {/* Butang HANTAR dikunci di bawah luar dari Scroll Area */}
-                      <button 
-                        onPointerDown={withInstantTouch(() => { if(p1State.input.trim() && !p1State.feedback) handleAnswer('p1'); })}
-                        disabled={!p1State.input.trim() || p1State.feedback !== null}
-                        className="mt-2 w-full bg-green-500 disabled:bg-slate-300 text-white text-lg lg:text-2xl font-black py-2 lg:py-3 rounded-xl shadow-[0_4px_0_0_rgba(21,128,61,1)] active:shadow-none active:translate-y-1 disabled:shadow-none transition-all touch-manipulation shrink-0"
-                      >
+                      <button onClick={() => handleAnswer('p1')} disabled={!p1State.input.trim() || p1State.feedback !== null} className="mt-auto w-full bg-green-500 disabled:bg-slate-300 disabled:border-b-0 disabled:shadow-none text-white text-2xl font-black py-3 rounded-2xl shadow-[0_6px_0_0_#15803d] active:shadow-none active:translate-y-1 active:border-b-0 border-b-4 border-green-700 transition-all z-10 relative">
                         HANTAR
                       </button>
                     </>
                   )}
                 </div>
 
-                {/* ----------------- SCOREBOARD ZONE (TENGAH) ----------------- */}
-                <div className="w-[20%] bg-yellow-50 rounded-[1.5rem] lg:rounded-[2rem] border-4 lg:border-8 border-yellow-300 p-2 flex flex-col items-center min-h-0">
-                  <h2 className="text-base lg:text-xl font-black text-amber-700 mb-2 flex flex-col items-center gap-1 text-center w-full pb-2 border-b-2 border-yellow-200">
-                    <Icon d={ICONS.trophy} className="w-5 h-5 lg:w-8 lg:h-8 text-yellow-500" />
+                {/* ----------------- PAPAN MARKAH (16%) - TEMA KUNING CERIA ----------------- */}
+                <div className="w-[16%] bg-gradient-to-b from-yellow-50 to-yellow-200 rounded-[2.5rem] border-[8px] border-yellow-300 shadow-[0_8px_0_0_#fde047] p-2 flex flex-col items-center h-full relative overflow-hidden">
+                  <div className="absolute top-2 right-2 text-2xl opacity-20">⭐</div>
+                  <h2 className="text-xl font-black text-amber-700 mb-2 flex flex-col items-center gap-1 text-center w-full pb-2 border-b-4 border-yellow-300/50 relative z-10">
+                    <span className="bg-yellow-400 p-2 rounded-full border-2 border-white shadow-sm"><i data-lucide="trophy" className="w-6 h-6 text-white fill-current"></i></span>
                     MARKAH
                   </h2>
                   
-                  <div className="flex-1 w-full flex flex-col gap-1 lg:gap-2 overflow-y-auto custom-scrollbar pr-1">
+                  <div className="flex-1 w-full flex flex-col gap-2 overflow-y-auto custom-scrollbar pr-1 relative z-10">
                     {sortedStudents.map((student, index) => (
-                      <div key={student.id} className={`bg-white rounded-xl p-1 lg:p-2 border-2 flex flex-col items-center text-center transition-all ${(student.id === activeStudent1.id && !p1State.isFinished) || (student.id === activeStudent2.id && !p2State.isFinished) ? 'border-orange-400 bg-orange-50 scale-[1.02]' : 'border-yellow-100'}`}>
-                        <div className={`w-4 h-4 lg:w-6 lg:h-6 rounded-full flex items-center justify-center font-black text-white mb-1 text-[10px] lg:text-sm ${index === 0 ? 'bg-yellow-400' : index === 1 ? 'bg-slate-400' : index === 2 ? 'bg-amber-600' : 'bg-slate-200'}`}>{index + 1}</div>
-                        <span className="font-bold text-[10px] lg:text-sm text-slate-700 leading-tight">{student.name}</span>
-                        <span className="font-black text-base lg:text-xl text-orange-600">{student.score}</span>
+                      <div key={student.id} className={`bg-white rounded-2xl p-2 border-[3px] shadow-sm flex flex-col items-center justify-center text-center transition-all relative overflow-hidden
+                        ${(student.id === activeStudent1.id && !p1State.isFinished) || (student.id === activeStudent2.id && !p2State.isFinished) ? 'border-orange-400 bg-orange-50 scale-105 shadow-md' : 'border-yellow-200 hover:scale-105'}`}>
+                        {/* Riben Nombor */}
+                        <div className={`absolute top-0 left-0 w-8 h-8 rounded-br-2xl flex items-center justify-center font-black text-white text-xs shadow-sm
+                            ${index === 0 ? 'bg-yellow-400' : index === 1 ? 'bg-slate-400' : index === 2 ? 'bg-amber-600' : 'bg-slate-200 text-slate-500'}`}>
+                            #{index + 1}
+                        </div>
+                        <span className="font-bold text-sm text-slate-700 mt-3">{student.name}</span>
+                        <span className="font-black text-2xl text-orange-500">{student.score}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                {/* ----------------- PLAYER 2 ZONE (KANAN) ----------------- */}
-                <div className="w-[40%] bg-pink-50 rounded-[1.5rem] lg:rounded-[2rem] border-4 lg:border-8 border-pink-200 relative flex flex-col p-2 overflow-hidden min-h-0">
+                {/* ----------------- KUMPULAN KANAN (42%) - TEMA PINK CERIA ----------------- */}
+                <div className="w-[42%] bg-gradient-to-b from-pink-50 to-pink-200 rounded-[2.5rem] border-[8px] border-pink-300 shadow-[0_8px_0_0_#f9a8d4] relative flex flex-col p-3 lg:p-4 overflow-hidden h-full">
+                  <div className="absolute top-2 right-2 text-4xl opacity-20">🌸</div>
+                  <div className="absolute bottom-2 left-2 text-4xl opacity-20">🦋</div>
+
                   {p2State.isFinished ? (
                     <div className="flex-1 flex flex-col items-center justify-center text-center animate-pulse">
-                      <div className="bg-pink-100 p-6 rounded-full mb-4"><Icon d={ICONS.check} className="w-16 h-16 lg:w-20 lg:h-20 text-pink-500" /></div>
-                      <h2 className="text-3xl lg:text-4xl font-black text-pink-600 mb-2">HEBAT!</h2>
-                      <p className="text-lg lg:text-xl font-bold text-slate-500">Menunggu rakan di sebelah...</p>
+                      <div className="bg-pink-100 p-6 rounded-full mb-4 border-4 border-pink-400 shadow-md"><i data-lucide="check" className="w-20 h-20 text-pink-500" strokeWidth={4}></i></div>
+                      <h2 className="text-4xl font-black text-pink-600 mb-2">SIAP!</h2>
+                      <p className="text-lg font-bold text-slate-500 bg-white/50 px-4 py-2 rounded-full">Tunggu rakan sebelah...</p>
                     </div>
                   ) : (
                     <>
-                      {/* Flex-1 Scrollable Area */}
-                      <div className="flex-1 w-full flex flex-col min-h-0 overflow-y-auto overflow-x-hidden custom-scrollbar pr-1 pb-1">
-                        
-                        {p2State.feedback && (
-                          <div className={`absolute inset-0 z-50 flex flex-col items-center justify-center backdrop-blur-sm bg-white/95 ${p2State.feedback === 'correct' ? 'text-green-500' : 'text-red-500'}`}>
-                            {p2State.feedback === 'correct' ? (
-                              <>
-                                <div className="bg-green-100 p-4 lg:p-6 rounded-full mb-2 lg:mb-4 animate-bounce"><Icon d={ICONS.check} className="w-16 h-16 lg:w-24 lg:h-24" /></div>
-                                <h2 className="text-4xl lg:text-5xl font-black mb-2">PANDAI!</h2>
-                                <p className="text-xl lg:text-2xl font-bold bg-green-500 text-white px-4 lg:px-6 py-1 lg:py-2 rounded-full">+2 Markah</p>
-                              </>
-                            ) : p2State.feedback === 'timeout' ? (
-                              <>
-                                <div className="bg-orange-100 p-4 lg:p-6 rounded-full mb-2 lg:mb-4"><Icon d={ICONS.clock} className="w-16 h-16 lg:w-24 lg:h-24 text-orange-500" /></div>
-                                <h2 className="text-3xl lg:text-5xl font-black mb-2 text-orange-500">MASA TAMAT!</h2>
-                                <p className="text-xl lg:text-2xl font-bold text-slate-700">Jawapan: <span className="text-pink-600 text-3xl lg:text-4xl">{word2.word}</span></p>
-                              </>
-                            ) : (
-                              <>
-                                <div className="bg-red-100 p-4 lg:p-6 rounded-full mb-2 lg:mb-4"><Icon d={ICONS.x} className="w-16 h-16 lg:w-24 lg:h-24" /></div>
-                                <h2 className="text-3xl lg:text-5xl font-black mb-2">CUBA LAGI!</h2>
-                                <p className="text-xl lg:text-2xl font-bold text-slate-700">Jawapan: <span className="text-pink-600 text-3xl lg:text-4xl">{word2.word}</span></p>
-                              </>
-                            )}
-                          </div>
-                        )}
+                      {/* Maklum Balas Kanan */}
+                      {p2State.feedback && (
+                        <div className={`absolute inset-0 z-50 flex flex-col items-center justify-center backdrop-blur-md bg-white/80 rounded-[2rem]
+                          ${p2State.feedback === 'correct' ? 'text-green-500' : 'text-red-500'}`}>
+                          {p2State.feedback === 'correct' ? (
+                            <div className="flex flex-col items-center animate-bounce">
+                              <div className="bg-green-100 p-6 rounded-full mb-2 border-4 border-green-400 shadow-lg"><span className="text-6xl">🌟</span></div>
+                              <h2 className="text-5xl font-black mb-1 drop-shadow-md">PANDAI!</h2>
+                              <p className="text-2xl font-black bg-green-500 text-white px-6 py-2 rounded-full border-4 border-green-300 shadow-md">+2 Markah</p>
+                            </div>
+                          ) : p2State.feedback === 'timeout' ? (
+                            <div className="flex flex-col items-center animate-wiggle">
+                              <div className="bg-orange-100 p-6 rounded-full mb-2 border-4 border-orange-400 shadow-lg"><span className="text-6xl">⏰</span></div>
+                              <h2 className="text-4xl font-black mb-2 text-orange-500 drop-shadow-md">ALAMAK, MASA TAMAT!</h2>
+                              <div className="bg-white p-4 rounded-3xl border-4 border-dashed border-orange-300 shadow-md">
+                                <p className="text-xl font-bold text-slate-500 mb-1">Jawapan:</p>
+                                <p className="text-pink-600 text-4xl font-black">{word2.word}</p>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="flex flex-col items-center animate-wiggle">
+                              <div className="bg-red-100 p-6 rounded-full mb-2 border-4 border-red-400 shadow-lg"><span className="text-6xl">❌</span></div>
+                              <h2 className="text-4xl font-black mb-2 drop-shadow-md">CUBA LAGI!</h2>
+                              <div className="bg-white p-4 rounded-3xl border-4 border-dashed border-red-300 shadow-md">
+                                <p className="text-xl font-bold text-slate-500 mb-1">Jawapan:</p>
+                                <p className="text-pink-600 text-4xl font-black">{word2.word}</p>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
 
-                        {renderTimerBar(p2State.timeLeft, 'pink')}
+                      {renderTimerBar(p2State.timeLeft, 'pink')}
 
-                        <div className="w-full flex justify-between items-center mb-1 gap-1">
-                           <span className="bg-pink-200 text-pink-800 px-2 lg:px-3 py-1 rounded-xl font-bold whitespace-nowrap shadow-sm text-xs lg:text-sm">S: {p2State.wordIdx + 1}/15</span>
-                           <div className="bg-pink-500 text-white px-3 lg:px-4 py-1 rounded-xl font-black text-base lg:text-xl flex-1 text-center shadow-sm truncate">{activeStudent2.name}</div>
+                      <div className="flex-1 flex flex-col items-center justify-start w-full relative z-10">
+                        <div className="w-full flex justify-between items-center mb-1 gap-2">
+                           <span className="bg-white border-2 border-pink-300 text-pink-700 px-4 py-2 rounded-2xl font-black shadow-sm text-sm lg:text-base">
+                             SOALAN: {p2State.wordIdx + 1}/15
+                           </span>
+                           <div className="bg-pink-500 text-white px-6 py-2 rounded-2xl font-black text-xl lg:text-2xl flex-1 text-center border-b-4 border-pink-700 shadow-sm">
+                              {activeStudent2.name}
+                           </div>
                         </div>
                         
-                        <div className="flex justify-center my-1 lg:my-2 w-full">
-                          <div className="bg-white border-2 lg:border-4 border-dashed border-pink-300 rounded-[1rem] p-2 inline-block shadow-sm pointer-events-none">
-                            <div className="text-[50px] lg:text-[60px] leading-none drop-shadow-xl">{word2.emoji}</div>
-                          </div>
+                        {/* Kotak Gambar Ala Polaroid */}
+                        <div className="bg-white border-4 lg:border-[6px] border-pink-300 rounded-[2rem] p-3 my-2 shadow-[0_4px_0_0_#f9a8d4] flex items-center justify-center h-28 lg:h-36 w-[80%] mx-auto transform rotate-1 hover:rotate-0 transition-transform">
+                          <img src={word2.image} alt={word2.word} className="max-h-full max-w-full object-contain drop-shadow-md" onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/200x200/fce7f3/be185d?text=${word2.word}`; }} />
                         </div>
 
-                        <div className="flex justify-center mb-1 w-full">
-                          <button onPointerDown={withInstantTouch(() => speakWord(word2.word))} className="bg-cyan-400 text-cyan-950 px-4 py-1 lg:py-2 rounded-full text-sm lg:text-base font-black shadow-[0_3px_0_0_rgba(6,182,212,1)] active:translate-y-1 flex items-center gap-1 lg:gap-2 border-2 border-cyan-200 touch-manipulation">
-                            <Icon d={ICONS.volOn} className="w-4 h-4 lg:w-5 lg:h-5" /> DENGAR
-                          </button>
-                        </div>
+                        <button onClick={() => speakWord(word2.word)} className="bg-yellow-400 hover:bg-yellow-300 text-yellow-900 px-6 py-2 rounded-full text-base font-black shadow-[0_4px_0_0_#ca8a04] active:translate-y-1 active:shadow-none mb-3 flex items-center gap-2 border-4 border-yellow-200 transition-all">
+                          <i data-lucide="volume-2" className="w-5 h-5 fill-current"></i> DENGAR
+                        </button>
 
-                        <input type="text" value={p2State.input} readOnly placeholder="EJA..." className="w-full text-center text-xl lg:text-3xl font-black py-1 lg:py-2 rounded-xl border-2 lg:border-4 border-pink-300 outline-none mb-1 lg:mb-2 uppercase tracking-[0.2em] text-slate-700 shadow-inner bg-white pointer-events-none" />
+                        <input type="text" value={p2State.input} readOnly placeholder="EJA SINI..." className="w-full text-center text-3xl font-black py-2 lg:py-3 rounded-2xl border-[4px] border-pink-400 outline-none mb-2 lg:mb-3 uppercase tracking-widest text-pink-900 shadow-inner bg-white/90 placeholder-pink-300" />
 
-                        {renderKeyboard('p2', 'pink')}
+                        {renderKeyboard('p2', 'p2')}
                       </div>
 
-                      {/* Butang HANTAR dikunci di bawah luar dari Scroll Area */}
-                      <button 
-                        onPointerDown={withInstantTouch(() => { if(p2State.input.trim() && !p2State.feedback) handleAnswer('p2'); })}
-                        disabled={!p2State.input.trim() || p2State.feedback !== null}
-                        className="mt-2 w-full bg-green-500 disabled:bg-slate-300 text-white text-lg lg:text-2xl font-black py-2 lg:py-3 rounded-xl shadow-[0_4px_0_0_rgba(21,128,61,1)] active:shadow-none active:translate-y-1 disabled:shadow-none transition-all touch-manipulation shrink-0"
-                      >
+                      <button onClick={() => handleAnswer('p2')} disabled={!p2State.input.trim() || p2State.feedback !== null} className="mt-auto w-full bg-green-500 disabled:bg-slate-300 disabled:border-b-0 disabled:shadow-none text-white text-2xl font-black py-3 rounded-2xl shadow-[0_6px_0_0_#15803d] active:shadow-none active:translate-y-1 active:border-b-0 border-b-4 border-green-700 transition-all z-10 relative">
                         HANTAR
                       </button>
                     </>
@@ -595,61 +637,65 @@
               </>
             )}
 
-            {/* ----------------- PODIUM SHOWCASE (AKHIR) ----------------- */}
+            {}
             {gameState === 'ended' && (
-              <div className="w-full bg-white/95 rounded-[2rem] border-4 border-white h-full flex flex-col justify-center items-center p-6 text-center overflow-y-auto">
-                <div className="z-10 flex flex-col items-center w-full max-w-4xl">
-                  
-                  <h2 className="text-3xl lg:text-5xl font-black mb-6 text-purple-600 drop-shadow-md">🏆 PEMENANG 🏆</h2>
+              <div className="w-full bg-white/95 rounded-[3rem] shadow-[0_12px_0_0_rgba(255,255,255,0.5)] border-8 border-yellow-300 h-full flex flex-col justify-center items-center p-4 lg:p-8 text-center absolute inset-0 z-20 overflow-y-auto">
+                {/* Konfeti Hiasan */}
+                <div className="absolute top-10 left-20 text-5xl animate-float">🎊</div>
+                <div className="absolute top-20 right-20 text-6xl animate-wiggle">🎉</div>
+                <div className="absolute bottom-10 left-32 text-5xl animate-bounce">🎈</div>
+                
+                <div className="z-10 flex flex-col items-center w-full max-w-4xl mt-4">
+                  <h2 className="text-4xl lg:text-6xl font-black mb-10 text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 drop-shadow-sm flex items-center gap-4">
+                    🏆 JUARA KUIZ 🏆
+                  </h2>
 
-                  <div className="flex justify-center items-end gap-2 lg:gap-6 mb-6 h-48 lg:h-64 w-full">
-                    <div className="flex flex-col items-center flex-1">
-                      <span className="text-base lg:text-xl font-black text-slate-700 mb-1">{sortedStudents[1].name}</span>
-                      <div className="bg-gradient-to-b from-slate-200 to-slate-400 w-full h-24 lg:h-32 rounded-t-2xl border-2 border-slate-300 flex flex-col items-center justify-center shadow-lg relative">
-                        <span className="text-3xl lg:text-5xl font-black text-white">2</span>
-                        <span className="text-xs lg:text-base font-bold text-slate-800 bg-white/80 px-2 py-1 rounded-full mt-1">{sortedStudents[1].score}m</span>
+                  {/* 3D Visual Podium Comel */}
+                  <div className="flex justify-center items-end gap-2 lg:gap-6 mb-8 h-48 lg:h-56 w-full px-4">
+                    {/* TEMPAT KE-2 */}
+                    <div className="flex flex-col items-center flex-1 z-10">
+                      <span className="text-lg lg:text-xl font-black text-slate-700 bg-white px-4 py-1 rounded-full border-2 border-slate-200 mb-2 shadow-sm">{sortedStudents[1].name}</span>
+                      <div className="bg-gradient-to-b from-slate-100 to-slate-300 w-full h-24 lg:h-32 rounded-t-3xl border-t-8 border-x-4 border-slate-300 flex flex-col items-center justify-start pt-4 shadow-lg relative">
+                        <span className="text-4xl lg:text-5xl font-black text-slate-400 drop-shadow-sm">2</span>
+                        <div className="bg-white border-2 border-slate-300 px-3 py-1 rounded-full mt-2 font-black text-slate-600 text-sm shadow-inner">{sortedStudents[1].score}m</div>
                       </div>
                     </div>
-
-                    <div className="flex flex-col items-center flex-1">
-                      <div className="bg-yellow-100 p-1 lg:p-2 rounded-full mb-1 animate-bounce">
-                        <Icon d={ICONS.trophy} className="w-8 h-8 lg:w-12 lg:h-12 text-yellow-500 fill-yellow-400" />
+                    {/* TEMPAT PERTAMA */}
+                    <div className="flex flex-col items-center flex-1 z-20">
+                      <div className="bg-yellow-100 p-3 rounded-full mb-2 animate-bounce border-4 border-yellow-400 shadow-md">
+                        <i data-lucide="crown" className="w-10 h-10 lg:w-12 lg:h-12 text-yellow-500 fill-yellow-400"></i>
                       </div>
-                      <span className="text-xl lg:text-2xl font-black text-amber-600 mb-1">{sortedStudents[0].name}</span>
-                      <div className="bg-gradient-to-b from-yellow-300 to-amber-500 w-full h-36 lg:h-48 rounded-t-2xl border-2 border-yellow-200 flex flex-col items-center justify-center shadow-2xl relative z-10">
-                        <span className="text-5xl lg:text-6xl font-black text-white">1</span>
-                        <span className="text-sm lg:text-xl font-black text-amber-950 bg-white/90 px-3 py-1 rounded-full mt-1">{sortedStudents[0].score}m</span>
+                      <span className="text-xl lg:text-2xl font-black text-amber-600 bg-yellow-50 px-5 py-1 rounded-full border-2 border-yellow-300 mb-2 shadow-sm">{sortedStudents[0].name}</span>
+                      <div className="bg-gradient-to-b from-yellow-200 to-amber-400 w-full h-36 lg:h-44 rounded-t-3xl border-t-8 border-x-4 border-yellow-300 flex flex-col items-center justify-start pt-4 shadow-2xl relative">
+                        <span className="text-5xl lg:text-6xl font-black text-yellow-100 drop-shadow-md">1</span>
+                        <div className="bg-white border-2 border-amber-300 px-4 py-1.5 rounded-full mt-2 font-black text-amber-600 text-base shadow-inner">{sortedStudents[0].score}m</div>
                       </div>
                     </div>
-
-                    <div className="flex flex-col items-center flex-1">
-                      <span className="text-base lg:text-xl font-black text-slate-700 mb-1">{sortedStudents[2].name}</span>
-                      <div className="bg-gradient-to-b from-amber-600 to-amber-800 w-full h-16 lg:h-24 rounded-t-2xl border-2 border-amber-500 flex flex-col items-center justify-center shadow-lg relative">
-                        <span className="text-2xl lg:text-4xl font-black text-white">3</span>
-                        <span className="text-[10px] lg:text-sm font-bold text-amber-100 bg-amber-950/60 px-2 py-1 rounded-full mt-1">{sortedStudents[2].score}m</span>
+                    {/* TEMPAT KE-3 */}
+                    <div className="flex flex-col items-center flex-1 z-10">
+                      <span className="text-lg lg:text-xl font-black text-slate-700 bg-white px-4 py-1 rounded-full border-2 border-slate-200 mb-2 shadow-sm">{sortedStudents[2].name}</span>
+                      <div className="bg-gradient-to-b from-orange-200 to-orange-400 w-full h-20 lg:h-24 rounded-t-3xl border-t-8 border-x-4 border-orange-300 flex flex-col items-center justify-start pt-2 shadow-lg relative">
+                        <span className="text-3xl lg:text-4xl font-black text-orange-100 drop-shadow-sm">3</span>
+                        <div className="bg-white border-2 border-orange-300 px-3 py-1 rounded-full mt-1 font-black text-orange-600 text-sm shadow-inner">{sortedStudents[2].score}m</div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-2 w-full bg-slate-50 p-2 lg:p-4 rounded-xl mb-4 border-2 border-slate-200">
+                  <div className="grid grid-cols-3 gap-3 w-full bg-slate-100 p-4 rounded-3xl mb-6 border-4 border-slate-200 shadow-inner">
                     {sortedStudents.slice(3).map((st, i) => (
-                      <div key={st.id} className="flex items-center justify-between bg-white px-2 py-1 lg:py-2 rounded-lg border border-slate-200 font-bold text-slate-600 text-xs lg:text-base">
+                      <div key={st.id} className="flex items-center justify-between bg-white px-3 py-2 rounded-2xl border-2 border-slate-200 font-bold text-slate-600 text-sm lg:text-base shadow-sm">
                         <span>#{i + 4} {st.name}</span>
-                        <span className="text-orange-500 font-black">{st.score}m</span>
+                        <span className="text-orange-500 font-black bg-orange-50 px-2 py-0.5 rounded-lg border border-orange-200">{st.score}m</span>
                       </div>
                     ))}
                   </div>
 
-                  <button 
-                    onPointerDown={withInstantTouch(startGame)}
-                    className="bg-blue-500 text-white text-xl lg:text-2xl font-black py-3 px-8 rounded-full shadow-[0_4px_0_0_rgba(29,78,216,1)] active:shadow-none active:translate-y-1 flex items-center gap-2 border-2 border-blue-300 touch-manipulation"
-                  >
-                    <Icon d={ICONS.rotateCcw} className="w-6 h-6 lg:w-8 lg:h-8" /> MAIN SEMULA
+                  <button onClick={startGame} className="bg-blue-500 hover:bg-blue-400 text-white text-xl lg:text-3xl font-black py-4 px-10 rounded-[2rem] shadow-[0_8px_0_0_#1d4ed8] active:translate-y-2 active:shadow-none active:border-b-0 flex items-center gap-3 border-4 border-blue-300 border-b-8 transition-all">
+                    <i data-lucide="rotate-ccw" className="w-8 h-8 fill-current"></i> MAIN SEMULA
                   </button>
                 </div>
               </div>
             )}
-
           </div>
         </div>
       );

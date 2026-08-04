@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mari Bina Ayat</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- React & ReactDOM -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <!-- Babel for JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
+    body {
+      font-family: 'Fredoka', sans-serif;
+      user-select: none;
+    }
+    .bg-gradient-custom {
+      background: linear-gradient(135deg, #fef9c3 0%, #fce7f3 50%, #cffafe 100%);
+    }
+  </style>
+</head>
+<body class="bg-gray-950 w-screen h-screen flex items-center justify-center m-0 p-0 overflow-hidden">
+  <div id="root" class="w-full h-full flex items-center justify-center"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const RacingCarIcon = ({ className }) => (
+      <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 200" fill="none">
+        {/* Asap di belakang (Smoke) */}
+        <circle cx="50" cy="160" r="25" fill="#cbd5e1" />
+        <circle cx="30" cy="175" r="15" fill="#94a3b8" />
+        <circle cx="70" cy="170" r="20" fill="#e2e8f0" />
+        <circle cx="10" cy="165" r="12" fill="#e2e8f0" />
+
+        {/* Tiang Spoiler (Struts) */}
+        <rect x="85" y="60" width="12" height="70" fill="#334155" transform="skewX(-15)" />
+        <rect x="110" y="70" width="15" height="60" fill="#1e293b" />
+
+        {/* Badan Utama Kereta (Berubah warna mengikut murid - currentColor) */}
+        <path d="M 80 130 L 150 130 L 190 120 L 430 150 L 460 150 C 470 150, 470 170, 460 170 L 80 170 Z" fill="currentColor" />
+        
+        {/* Hidung Depan Kereta (Front Wing) */}
+        <rect x="430" y="160" width="45" height="10" rx="5" fill="currentColor" />
+
+        {/* Sayap Spoiler Atas */}
+        <rect x="60" y="50" width="90" height="14" rx="5" fill="currentColor" />
+
+        {/* Blok Enjin / Kokpit Belakang */}
+        <path d="M 120 105 L 160 105 L 160 130 L 120 130 Z" fill="#475569" />
+
+        {/* Topi Keledar Pemandu (Helmet & Visor) */}
+        <circle cx="190" cy="115" r="22" fill="#e2e8f0" />
+        <path d="M 190 103 L 210 103 C 215 113, 205 125, 190 125 Z" fill="#1e293b" />
+
+        {/* Tayar Belakang (Besar) */}
+        <circle cx="110" cy="140" r="45" fill="#1e293b" />
+        <circle cx="110" cy="140" r="22" fill="#64748b" />
+        <circle cx="110" cy="140" r="10" fill="#e2e8f0" />
+
+        {/* Tayar Depan (Kecil) */}
+        <circle cx="390" cy="155" r="28" fill="#1e293b" />
+        <circle cx="390" cy="155" r="14" fill="#64748b" />
+        <circle cx="390" cy="155" r="6" fill="#e2e8f0" />
+      </svg>
+    );
+
+    const STUDENTS = [
+      { id: 0, name: "Joseline", text: "text-pink-500", border: "border-pink-300", bgLight: "bg-pink-50" },
+      { id: 1, name: "Aina", text: "text-purple-500", border: "border-purple-300", bgLight: "bg-purple-50" },
+      { id: 2, name: "Suraiya", text: "text-amber-500", border: "border-amber-300", bgLight: "bg-amber-50" },
+      { id: 3, name: "Izzuandie", text: "text-blue-500", border: "border-blue-300", bgLight: "bg-blue-50" }
+    ];
+
+    const STUDENT_QUESTIONS = {
+      0: [
+        ["Ali", "baca", "buku"], ["Kucing", "minum", "susu"], ["Kakak", "sapu", "sampah"], ["Ayam", "makan", "padi"], ["Ibu", "potong", "kek"],
+        ["Adik", "beli", "roti"], ["Bapa", "basuh", "tangan"], ["Siti", "main", "bola"], ["Raju", "buka", "pintu"], ["Nenek", "masak", "sup"],
+        ["Datuk", "tanam", "pokok"], ["Kami", "main", "taman"], ["Burung", "terbang", "tinggi"], ["Ikan", "berenang", "laju"], ["Adik", "pakai", "baju"],
+        ["Ibu", "siram", "pokok"], ["Ali", "kayuh", "basikal"], ["Bapa", "minum", "kopi"], ["Kakak", "lipat", "baju"], ["Siti", "susun", "buku"],
+        ["Raju", "bawa", "beg"], ["Nenek", "beli", "buah"], ["Datuk", "pancing", "ikan"], ["Kucing", "tidur", "nyenyak"], ["Adik", "minum", "air"]
+      ],
+      1: [
+        ["Ibu", "masak", "nasi"], ["Siti", "siram", "bunga"], ["Datuk", "tanam", "pokok"], ["Mimi", "gosok", "gigi"], ["Adik", "pakai", "baju"],
+        ["Bapa", "pandu", "kereta"], ["Ali", "main", "padang"], ["Kucing", "makan", "ikan"], ["Kakak", "cuci", "pinggan"], ["Nenek", "jahit", "baju"],
+        ["Raju", "beli", "pensel"], ["Kami", "baca", "buku"], ["Burung", "buat", "sarang"], ["Adik", "lompat", "tinggi"], ["Ibu", "goreng", "ayam"],
+        ["Bapa", "baca", "akhbar"], ["Siti", "susun", "kasut"], ["Ali", "sapu", "lantai"], ["Kakak", "buat", "kek"], ["Nenek", "siram", "sayur"],
+        ["Datuk", "bakar", "sate"], ["Raju", "main", "layang"], ["Kucing", "kejar", "tikus"], ["Adik", "senyum", "manis"], ["Ibu", "beli", "susu"]
+      ],
+      2: [
+        ["Bapa", "cuci", "kereta"], ["Raju", "makan", "roti"], ["Nenek", "beli", "ikan"], ["Sara", "lukis", "gambar"], ["Burung", "terbang", "tinggi"],
+        ["Ibu", "kemas", "rumah"], ["Ali", "tendang", "bola"], ["Kucing", "panjat", "pokok"], ["Kakak", "sidai", "baju"], ["Datuk", "minum", "teh"],
+        ["Siti", "potong", "buah"], ["Kami", "nyanyi", "lagu"], ["Adik", "lukis", "bunga"], ["Ibu", "basuh", "baju"], ["Bapa", "baiki", "lampu"],
+        ["Raju", "bawa", "bola"], ["Nenek", "sapu", "halaman"], ["Datuk", "baca", "surat"], ["Kucing", "minum", "air"], ["Adik", "tidur", "awal"],
+        ["Kakak", "bantu", "ibu"], ["Siti", "tulis", "surat"], ["Ali", "buka", "tingkap"], ["Ibu", "masak", "mi"], ["Bapa", "beli", "buah"]
+      ],
+      3: [
+        ["Adik", "main", "bola"], ["Kami", "naik", "bas"], ["Abang", "tulis", "surat"], ["Bapa", "minum", "kopi"], ["Ali", "kayuh", "basikal"],
+        ["Ibu", "goreng", "ikan"], ["Siti", "cuci", "tangan"], ["Kucing", "lari", "laju"], ["Kakak", "beli", "tudung"], ["Datuk", "duduk", "diam"],
+        ["Raju", "lukis", "rumah"], ["Nenek", "makan", "ubat"], ["Adik", "basuh", "muka"], ["Ibu", "lipat", "selimut"], ["Bapa", "tanam", "bunga"],
+        ["Ali", "tangkap", "bola"], ["Siti", "susun", "kerusi"], ["Raju", "panjat", "bukit"], ["Kucing", "tangkap", "tikus"], ["Adik", "buka", "buku"],
+        ["Kakak", "sapu", "bilik"], ["Datuk", "minum", "air"], ["Nenek", "tanam", "serai"], ["Kami", "jalan", "kaki"], ["Bapa", "bawa", "lori"]
+      ]
+    };
+
+    function shuffleArray(arr) {
+      return [...arr].sort(() => Math.random() - 0.5);
+    }
+
+    function App() {
+      const [playerStates, setPlayerStates] = useState(() => {
+        const init = {};
+        STUDENTS.forEach((s) => {
+          init[s.id] = {
+            qIdx: 0,
+            available: shuffleArray(STUDENT_QUESTIONS[s.id][0]),
+            selected: [],
+            feedback: null,
+            finished: false
+          };
+        });
+        return init;
+      });
+
+      const [scores, setScores] = useState({ 0: 0, 1: 0, 2: 0, 3: 0 });
+      const [positions, setPositions] = useState({ 0: 0, 1: 0, 2: 0, 3: 0 });
+      
+      const [timeLeft, setTimeLeft] = useState(1200);
+      const [timerActive, setTimerActive] = useState(false);
+      const [gameEnded, setGameEnded] = useState(false);
+
+      useEffect(() => {
+        let interval = null;
+        if (timerActive && timeLeft > 0 && !gameEnded) {
+          interval = setInterval(() => {
+            setTimeLeft((prev) => prev - 1);
+          }, 1000);
+        } else if (timeLeft === 0 && !gameEnded) {
+          setTimerActive(false);
+          setGameEnded(true);
+        }
+        return () => clearInterval(interval);
+      }, [timerActive, timeLeft, gameEnded]);
+
+      useEffect(() => {
+        const allDone = STUDENTS.every((s) => playerStates[s.id].finished);
+        if (allDone && !gameEnded) {
+          setTimerActive(false);
+          setGameEnded(true);
+        }
+      }, [playerStates, gameEnded]);
+
+      const formatTime = (seconds) => {
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+      };
+
+      const handleSelectWord = (studentId, word, idx) => {
+        const state = playerStates[studentId];
+        if (state.feedback !== null || state.finished || gameEnded) return;
+
+        setPlayerStates((prev) => ({
+          ...prev,
+          [studentId]: {
+            ...state,
+            selected: [...state.selected, word],
+            available: state.available.filter((_, i) => i !== idx)
+          }
+        }));
+      };
+
+      const handleRemoveWord = (studentId, word, idx) => {
+        const state = playerStates[studentId];
+        if (state.feedback !== null || state.finished || gameEnded) return;
+
+        setPlayerStates((prev) => ({
+          ...prev,
+          [studentId]: {
+            ...state,
+            available: [...state.available, word],
+            selected: state.selected.filter((_, i) => i !== idx)
+          }
+        }));
+      };
+
+      const handleSumbitAnswer = (studentId) => {
+        const state = playerStates[studentId];
+        const targetSentence = STUDENT_QUESTIONS[studentId][state.qIdx].join(" ");
+        const isCorrect = state.selected.join(" ") === targetSentence;
+
+        if (isCorrect) {
+          setScores((prev) => ({ ...prev, [studentId]: prev[studentId] + 2 }));
+          setPositions((prev) => ({ ...prev, [studentId]: Math.min(prev[studentId] + 1, 25) }));
+          setPlayerStates((prev) => ({
+            ...prev,
+            [studentId]: { ...state, feedback: "betul" }
+          }));
+        } else {
+          setPlayerStates((prev) => ({
+            ...prev,
+            [studentId]: { ...state, feedback: "salah" }
+          }));
+        }
+
+        setTimeout(() => {
+          setPlayerStates((prev) => {
+            const curr = prev[studentId];
+            const nextIdx = curr.qIdx + 1;
+            if (nextIdx < 25) {
+              return {
+                ...prev,
+                [studentId]: {
+                  ...curr,
+                  qIdx: nextIdx,
+                  available: shuffleArray(STUDENT_QUESTIONS[studentId][nextIdx]),
+                  selected: [],
+                  feedback: null
+                }
+              };
+            } else {
+              return {
+                ...prev,
+                [studentId]: { ...curr, finished: true, feedback: null }
+              };
+            }
+          });
+        }, 850);
+      };
+
+      const getRankedStudents = () => {
+        return [...STUDENTS].sort((a, b) => {
+          if (scores[b.id] !== scores[a.id]) {
+            return scores[b.id] - scores[a.id];
+          }
+          return positions[b.id] - positions[a.id];
+        });
+      };
+
+      return (
+        <div class="aspect-video w-full max-w-[calc(100vh*16/9)] max-h-[calc(100vw*9/16)] bg-gradient-custom p-3 md:p-4 flex flex-col justify-between gap-2 shadow-2xl rounded-2xl overflow-hidden border-4 border-white/40">
+          
+          <header class="bg-white/80 backdrop-blur-md rounded-xl px-4 py-2 shadow border-2 border-white flex justify-between items-center shrink-0">
+            <div>
+              <h1 class="text-xl md:text-2xl font-bold bg-gradient-to-r from-pink-500 via-purple-600 to-blue-600 bg-clip-text text-transparent">
+                MARI BINA AYAT
+              </h1>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <a
+                href="index.html"
+                class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-lg shadow transition flex items-center gap-1"
+                title="Kembali ke Laman Utama"
+              >
+                🏠 Utama
+              </a>
+
+              {!gameEnded && (
+                <button
+                  onClick={() => { setTimerActive(false); setGameEnded(true); }}
+                  class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-lg shadow transition"
+                >
+                  Tamat Awal ⏹️
+                </button>
+              )}
+
+              <div class="flex items-center gap-2 bg-amber-50 px-3 py-1 rounded-xl border-2 border-amber-300 shadow-sm">
+                <span class="text-base animate-bounce">⌛</span>
+                <div>
+                  <div class="text-base font-bold text-amber-600 leading-tight">
+                    {formatTime(timeLeft)}
+                  </div>
+                  <div class="text-[9px] font-semibold text-amber-700">
+                    Masa (20 Minit)
+                  </div>
+                </div>
+                <button
+                  onClick={() => setTimerActive(!timerActive)}
+                  disabled={gameEnded}
+                  class={`px-3 py-1.5 rounded-lg font-bold text-xs text-white shadow transition ${
+                    gameEnded ? "bg-gray-400 cursor-not-allowed" :
+                    timerActive ? "bg-amber-600 hover:bg-amber-700" : "bg-emerald-500 hover:bg-emerald-600"
+                  }`}
+                >
+                  {timerActive ? "Jeda" : "Mula"}
+                </button>
+              </div>
+            </div>
+          </header>
+
+          {}
+          <section class="bg-gray-900 rounded-xl p-2 shadow border-2 border-gray-700 text-white shrink-0 relative">
+            <div class="flex justify-between items-center mb-1">
+              <h2 class="text-[11px] font-bold text-yellow-400 flex items-center gap-1">
+                <span>🏁</span> TREK LUMBA
+              </h2>
+            </div>
+
+            <div class="space-y-1.5 relative py-1">
+              {STUDENTS.map((s) => {
+                const step = positions[s.id];
+                const leftPercent = (step / 25) * 88;
+                
+                return (
+                  <div key={s.id} class="relative bg-gray-800 rounded h-7 flex items-center px-2 border-b-2 border-dashed border-gray-600">
+                    <div class="absolute right-3 top-0 bottom-0 w-3 bg-yellow-400/20 border-l border-r border-yellow-400 flex items-center justify-center">
+                      <span class="text-[6px] font-bold text-yellow-300 rotate-90">FINISH</span>
+                    </div>
+
+                    <div
+                      class="absolute transition-all duration-500 ease-out flex items-center"
+                      style={{ left: `${leftPercent}%` }}
+                    >
+                      <RacingCarIcon className={`w-14 h-auto ${s.text} drop-shadow-md`} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+
+          {}
+          {!gameEnded ? (
+            <div class="grid grid-cols-5 gap-2.5 flex-1 min-h-0">
+              
+              <main class="col-span-4 grid grid-cols-4 gap-2 h-full overflow-hidden">
+                {STUDENTS.map((s) => {
+                  const state = playerStates[s.id];
+                  const currentWords = STUDENT_QUESTIONS[s.id][state.qIdx];
+
+                  return (
+                    <div
+                      key={s.id}
+                      class={`bg-white/90 backdrop-blur-md rounded-xl p-2.5 shadow border-2 ${s.border} flex flex-col justify-between overflow-hidden relative`}
+                    >
+                      <div class="flex flex-col gap-0.5 pb-1 border-b border-gray-100 shrink-0">
+                        <div class="flex items-center justify-between">
+                          <div class="flex items-center gap-1">
+                            <RacingCarIcon className={`w-8 h-auto ${s.text}`} />
+                            <span class={`font-bold text-[11px] ${s.text}`}>{s.name}</span>
+                          </div>
+                          <span class="bg-gray-100 text-gray-700 font-bold px-1.5 py-0.5 rounded text-[9px]">
+                            {state.qIdx + 1} / 25
+                          </span>
+                        </div>
+                      </div>
+
+                      {!state.finished ? (
+                        <>
+                          <div class="flex flex-col gap-3 my-auto py-1">
+                            <div class={`${s.bgLight} border border-dashed border-gray-300 rounded-lg p-2 min-h-[48px] flex flex-row flex-wrap items-center justify-center gap-1`}>
+                              {state.selected.length === 0 ? (
+                                <span class="text-gray-400 text-[10px] text-center w-full">Susun menjadi ayat...</span>
+                              ) : (
+                                state.selected.map((w, idx) => (
+                                  <button
+                                    key={idx}
+                                    onClick={() => handleRemoveWord(s.id, w, idx)}
+                                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[11px] px-2.5 py-1 rounded shadow"
+                                  >
+                                    {w}
+                                  </button>
+                                ))
+                              )}
+                            </div>
+
+                            <div class="flex flex-col gap-1.5">
+                              {state.available.map((w, idx) => (
+                                <button
+                                  key={idx}
+                                  onClick={() => handleSelectWord(s.id, w, idx)}
+                                  class="w-full bg-white hover:bg-yellow-100 text-gray-800 border border-yellow-400 font-bold text-[11px] py-1.5 rounded shadow-sm text-center"
+                                >
+                                  {w}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div class="border-t border-gray-100 pt-1.5 shrink-0">
+                            {state.feedback === null ? (
+                              <button
+                                onClick={() => handleSumbitAnswer(s.id)}
+                                disabled={state.selected.length !== currentWords.length}
+                                class={`w-full py-2 rounded-lg font-bold text-[11px] text-white shadow transition ${
+                                  state.selected.length === currentWords.length
+                                    ? "bg-gradient-to-r from-blue-500 to-indigo-600 hover:opacity-90 active:scale-95"
+                                    : "bg-gray-300 cursor-not-allowed"
+                                }`}
+                              >
+                                Hantar Jawapan
+                              </button>
+                            ) : (
+                              <div class={`w-full py-1.5 rounded-lg font-bold text-[11px] text-white text-center shadow animate-bounce ${
+                                state.feedback === "betul" ? "bg-green-600" : "bg-red-500"
+                              }`}>
+                                {state.feedback === "betul" ? "Syabas! Betul 🎉 (+2)" : "Kurang Tepat ❌ (0)"}
+                              </div>
+                            )}
+                          </div>
+                        </>
+                      ) : (
+                        <div class="flex flex-col items-center justify-center my-auto text-center">
+                          <span class="text-3xl mb-1">🏁</span>
+                          <p class="font-bold text-xs text-gray-800">Selesai 25 Soalan!</p>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </main>
+
+              <aside class="col-span-1 flex flex-col gap-2 h-full overflow-hidden">
+                <div class="bg-white/90 backdrop-blur-md rounded-xl p-3 shadow border-2 border-white flex flex-col h-full">
+                  <h3 class="text-[11px] font-bold text-gray-800 border-b border-gray-100 pb-1 mb-2 flex items-center justify-between shrink-0">
+                    <span>PAPAN MARKAH</span>
+                  </h3>
+
+                  <div class="space-y-2 flex-1 overflow-y-auto">
+                    {STUDENTS.map((s) => {
+                      const total = scores[s.id];
+                      return (
+                        <div
+                          key={s.id}
+                          class="px-2 py-2 rounded-lg border border-gray-100 bg-white shadow-sm flex items-center justify-between"
+                        >
+                          <div class="flex items-center gap-1.5">
+                            <RacingCarIcon className={`w-7 h-auto ${s.text}`} />
+                            <span class="font-bold text-[11px] text-gray-800">{s.name}</span>
+                          </div>
+                          <span class="bg-indigo-50 text-indigo-700 border border-indigo-100 font-bold px-2 py-0.5 rounded text-xs">
+                            {total}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <button
+                    onClick={() => window.location.reload()}
+                    class="w-full mt-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold py-1.5 rounded-lg shadow hover:opacity-90 transition text-[11px] shrink-0"
+                  >
+                    Set Semula Permainan
+                  </button>
+                </div>
+              </aside>
+
+            </div>
+          ) : (
+            <div class="bg-white/95 backdrop-blur-md rounded-2xl p-6 shadow-2xl border-4 border-white flex-1 flex flex-col items-center justify-center text-center">
+              <div class="text-5xl mb-2">🏆</div>
+              <h2 class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent mb-1">
+                KEPUTUSAN RASMI JUARA BAHASA
+              </h2>
+              <p class="text-xs text-gray-600 mb-6">
+                Tahniah kepada semua murid yang telah berusaha menyusun ayat dengan hebat!
+              </p>
+
+              <div class="grid grid-cols-4 gap-4 w-full max-w-3xl mb-6">
+                {getRankedStudents().map((s, idx) => {
+                  const total = scores[s.id];
+                  const isWinner = idx === 0;
+
+                  return (
+                    <div
+                      key={s.id}
+                      class={`p-4 rounded-2xl border-2 flex flex-col items-center justify-center transition ${
+                        isWinner
+                          ? "bg-amber-50 border-amber-400 shadow-xl scale-105"
+                          : "bg-gray-50 border-gray-200"
+                      }`}
+                    >
+                      <span class="text-2xl mb-1">
+                        {idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : "🏅"}
+                      </span>
+                      <div class="mb-2">
+                        <RacingCarIcon className={`w-24 h-auto ${s.text} drop-shadow-md mx-auto`} />
+                      </div>
+                      <span class="font-bold text-sm text-gray-800">{s.name}</span>
+                      <span class="text-[10px] text-gray-500 mb-2">Tempat Ke-{idx + 1}</span>
+                      <div class="bg-white font-bold px-3 py-1 rounded-xl border border-gray-200 text-sm text-indigo-700">
+                        {total} Markah
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <button
+                onClick={() => window.location.reload()}
+                class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:opacity-90 text-white font-bold px-8 py-3 rounded-xl shadow-lg transition text-sm"
+              >
+                Main Semula Permainan ➔
+              </button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>

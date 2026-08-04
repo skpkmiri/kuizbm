@@ -413,7 +413,7 @@
             
             {/* Butang Kuiz Ejaan (Atas) */}
             <button 
-              onClick={() => startGameSetup('ejaan')}
+              onClick={() => window.location.href = 'kuiz_ejaan.html'}
               className="group relative w-full bg-gradient-to-r from-yellow-300 to-orange-400 rounded-[3rem] p-10 border-b-[16px] border-orange-600 active:border-b-0 active:translate-y-4 transition-all shadow-2xl border-x-4 border-t-4 border-white flex items-center gap-12"
             >
               <div className="bg-white/40 rounded-full w-40 h-40 flex items-center justify-center group-hover:animate-bounce shadow-inner border-4 border-white/50 flex-shrink-0">
@@ -427,7 +427,7 @@
 
             {/* Butang Kuiz Bina Ayat (Bawah) */}
             <button 
-              onClick={() => startGameSetup('bina_ayat')}
+              onClick={() => window.location.href = 'Kuiz Bina ayat.html'}
               className="group relative w-full bg-gradient-to-r from-green-300 to-emerald-500 rounded-[3rem] p-10 border-b-[16px] border-emerald-700 active:border-b-0 active:translate-y-4 transition-all shadow-2xl border-x-4 border-t-4 border-white flex items-center gap-12"
             >
               <div className="bg-white/40 rounded-full w-40 h-40 flex items-center justify-center group-hover:animate-bounce shadow-inner border-4 border-white/50 flex-shrink-0">
@@ -549,219 +549,85 @@
         );
       };
 
-      const QuizEjaanUI = () => {
-        const currentQ = questions[currentQIndex];
-        if (!currentQ) return null;
-        const currentPlayer = players[currentPlayerIndex];
+      const LeaderboardUI = () => {
+        // Asingkan data mengikut mod permainan dari pangkalan data
+        const ejaanData = leaderboardData.filter(r => r.mod === 'ejaan' || (r.mod && r.mod.toLowerCase().includes('ejaan')));
+        const binaAyatData = leaderboardData.filter(r => r.mod === 'bina_ayat' || (r.mod && r.mod.toLowerCase().includes('ayat')));
 
-        return (
-          <div className="flex flex-col items-center w-full h-full bg-gradient-to-b from-cyan-200 to-blue-400 p-12 relative overflow-hidden">
-            <FeedbackOverlay />
+        // Komponen jadual mini untuk dipaparkan sebelah menyebelah
+        const TableJuara = ({ data, tajuk, ikon, warnaBorder, warnaTeks }) => (
+          <div className={`flex-1 bg-white/10 backdrop-blur-xl p-8 rounded-[3rem] border-[8px] ${warnaBorder} shadow-2xl flex flex-col`}>
+            <div className={`flex items-center justify-center gap-6 border-b-[8px] ${warnaBorder.replace('/80', '/40')} pb-6 mb-6`}>
+              <span className="text-[60px]">{ikon}</span>
+              <h3 className={`text-5xl font-black ${warnaTeks} drop-shadow-md tracking-wider uppercase`}>{tajuk}</h3>
+            </div>
             
-            <div className="bg-yellow-400 border-[8px] border-white text-yellow-900 rounded-full px-16 py-8 mb-12 shadow-2xl animate-bounce flex items-center gap-8 mt-10">
-              <Smile className="w-20 h-20" />
-              <span className="text-7xl font-black">GILIRAN: {currentPlayer.toUpperCase()}</span>
-            </div>
-
-            <div className="w-full max-w-7xl flex justify-between items-center mb-8 text-5xl font-black text-blue-900 drop-shadow-sm">
-              <span className="bg-white/60 px-8 py-4 rounded-3xl border-4 border-white">Soalan {currentQIndex + 1} / {questions.length}</span>
-              <span className="bg-white/60 px-8 py-4 rounded-3xl border-4 border-white">Markah {currentPlayer}: {scores[currentPlayer]}</span>
-            </div>
-
-            <div className="bg-white rounded-[4rem] shadow-2xl p-20 w-full max-w-7xl flex flex-col items-center border-[16px] border-blue-400 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-8 bg-blue-100">
-                <div className="h-full bg-green-400 transition-all duration-500 rounded-r-full shadow-inner" style={{width: `${((currentQIndex)/questions.length)*100}%`}}></div>
-              </div>
-              
-              <h2 className="text-[80px] font-black text-gray-800 mb-12 mt-10 text-center leading-tight">{currentQ.soalan}</h2>
-              
-              <div className="text-[250px] mb-16 leading-none bg-blue-50 rounded-[4rem] p-20 shadow-inner border-[12px] border-blue-200 flex items-center justify-center transform transition-transform hover:scale-105">
-                {currentQ.emoji}
-              </div>
-
-              <div className="grid grid-cols-2 gap-12 w-full">
-                {currentQ.pilihan.map((pilihan, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => handleEjaanAnswer(pilihan)}
-                    className="bg-blue-100 hover:bg-blue-300 text-blue-900 border-b-[16px] border-blue-500 hover:border-blue-600 active:border-b-0 active:translate-y-4 transition-all rounded-[3rem] p-16 text-[80px] font-black shadow-2xl break-words"
-                  >
-                    {pilihan}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        );
-      };
-
-      const QuizBinaAyatUI = () => {
-        const currentQ = questions[currentQIndex];
-        if (!currentQ) return null;
-        const currentPlayer = players[currentPlayerIndex];
-
-        return (
-          <div className="flex flex-col items-center w-full h-full bg-gradient-to-b from-green-200 to-emerald-400 p-12 relative overflow-hidden">
-            <FeedbackOverlay />
-
-            <div className="bg-yellow-400 border-[8px] border-white text-yellow-900 rounded-full px-16 py-8 mb-12 shadow-2xl animate-bounce flex items-center gap-8 mt-10">
-              <Smile className="w-20 h-20" />
-              <span className="text-7xl font-black">GILIRAN: {currentPlayer.toUpperCase()}</span>
-            </div>
-
-            <div className="w-full max-w-7xl flex justify-between items-center mb-8 text-5xl font-black text-green-900 drop-shadow-sm">
-              <span className="bg-white/60 px-8 py-4 rounded-3xl border-4 border-white">Soalan {currentQIndex + 1} / {questions.length}</span>
-              <span className="bg-white/60 px-8 py-4 rounded-3xl border-4 border-white">Markah {currentPlayer}: {scores[currentPlayer]}</span>
-            </div>
-
-            <div className="bg-white rounded-[4rem] shadow-2xl p-20 w-full max-w-7xl flex flex-col items-center border-[16px] border-green-500 relative">
-              <div className="absolute top-0 left-0 w-full h-8 bg-green-100">
-                <div className="h-full bg-yellow-400 transition-all duration-500 rounded-r-full shadow-inner" style={{width: `${((currentQIndex)/questions.length)*100}%`}}></div>
-              </div>
-
-              <h2 className="text-[70px] font-black text-gray-800 mb-16 mt-8 text-center leading-tight">{currentQ.soalan}</h2>
-
-              <div className="w-full min-h-[300px] bg-gray-50 rounded-[3rem] border-[12px] border-dashed border-gray-300 p-12 mb-16 flex flex-wrap gap-8 items-center justify-center">
-                {selectedWords.length === 0 && <span className="text-5xl text-gray-400 italic font-bold">Tekan perkataan di bawah untuk menyusun ayat...</span>}
-                {selectedWords.map((word, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => handleWordDeselect(word, idx)}
-                    className="bg-green-500 text-white text-[70px] font-black px-14 py-8 rounded-[2rem] shadow-[0_12px_0_0_#166534] active:shadow-none active:translate-y-3 transition-all animate-fade-in"
-                  >
-                    {word}
-                  </button>
-                ))}
-              </div>
-
-              <div className="w-full flex flex-wrap gap-8 items-center justify-center mb-20">
-                {availableWords.map((word, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => handleWordSelect(word, idx)}
-                    className="bg-yellow-300 text-yellow-900 text-[70px] font-black px-14 py-8 rounded-[2rem] shadow-[0_12px_0_0_#b45309] active:shadow-none active:translate-y-3 transition-all hover:bg-yellow-400"
-                  >
-                    {word}
-                  </button>
-                ))}
-              </div>
-
-              <div className="flex gap-12">
-                <button 
-                  onClick={() => { setAvailableWords(shuffleArray(currentQ.perkataan)); setSelectedWords([]); }}
-                  className="bg-gray-200 text-gray-700 text-5xl font-black px-14 py-8 rounded-[2rem] border-b-[12px] border-gray-400 active:border-b-0 active:translate-y-3 flex items-center"
-                >
-                  <RefreshCw className="w-12 h-12 mr-4" /> MULA SEMULA
-                </button>
-                
-                <button 
-                  onClick={checkBinaAyat}
-                  disabled={availableWords.length > 0}
-                  className={`text-6xl font-black px-20 py-8 rounded-[2rem] transition-all border-b-[16px] ${availableWords.length === 0 ? 'bg-blue-500 text-white border-blue-700 hover:bg-blue-400 active:border-b-0 active:translate-y-4 shadow-xl' : 'bg-gray-300 text-gray-500 border-gray-400 cursor-not-allowed'}`}
-                >
-                  SEMAK JAWAPAN
-                </button>
-              </div>
-            </div>
-          </div>
-        );
-      };
-
-      const ResultUI = () => {
-        const sortedPlayers = [...players].sort((a, b) => scores[b] - scores[a]);
-        const maxScore = scores[sortedPlayers[0]];
-
-        return (
-          <div className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-b from-purple-400 via-pink-400 to-red-400 p-12 relative overflow-hidden">
-            <div className="absolute inset-0 pointer-events-none flex justify-around">
-               {[...Array(15)].map((_, i) => (
-                 <Star key={i} className={`text-yellow-300 w-32 h-32 animate-bounce opacity-70`} style={{ animationDelay: `${i * 0.2}s`, marginTop: `${Math.random() * 80}vh`}} />
-               ))}
-            </div>
-
-            <div className="bg-white/90 backdrop-blur-md p-20 rounded-[5rem] shadow-2xl border-[16px] border-yellow-300 text-center max-w-6xl w-full relative z-10">
-              <Trophy className="w-[300px] h-[300px] text-yellow-400 mx-auto mb-10 drop-shadow-2xl animate-pulse" />
-              <h1 className="text-[120px] font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-pink-600 mb-6 leading-tight drop-shadow-md">
-                TAHNIAH!
-              </h1>
-              <p className="text-6xl font-black text-gray-600 mb-16">
-                {isSavingScores ? "Menyimpan markah..." : "Kuiz telah tamat!"}
-              </p>
-
-              <div className="bg-purple-100 rounded-[4rem] p-12 mb-16 text-left border-[8px] border-purple-300 shadow-inner">
-                <h3 className="text-6xl font-black text-purple-800 border-b-[8px] border-purple-300 pb-8 mb-8 text-center">KEPUTUSAN</h3>
-                {sortedPlayers.map((player, idx) => (
-                  <div key={idx} className={`flex justify-between items-center text-6xl p-8 rounded-[3rem] mb-6 font-black ${scores[player] === maxScore ? 'bg-yellow-300 text-yellow-900 border-[8px] border-yellow-500 shadow-xl' : 'bg-white text-gray-700 border-4 border-gray-200'}`}>
-                    <div className="flex items-center gap-8">
-                      <span className="w-20 h-20 flex items-center justify-center bg-black/10 rounded-full text-5xl">{idx + 1}</span>
-                      {player}
-                    </div>
-                    <div className="flex items-center gap-4">
-                      {scores[player]} <Star className="w-16 h-16 text-yellow-500 fill-yellow-500 mb-2" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex gap-10">
-                 <button 
-                   onClick={() => setScreen('leaderboard')}
-                   className="flex-1 bg-purple-600 hover:bg-purple-700 text-white text-5xl font-black px-12 py-10 rounded-full shadow-[0_12px_0_0_#4c1d95] active:shadow-none active:translate-y-3 transition-all border-4 border-white"
-                 >
-                   SENARAI JUARA
-                 </button>
-                 <button 
-                   onClick={resetGame}
-                   className="flex-1 bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-white text-6xl font-black px-16 py-10 rounded-full shadow-[0_14px_0_0_#047857] active:shadow-none active:translate-y-3 transition-all border-4 border-white"
-                 >
-                   MAIN LAGI
-                 </button>
-              </div>
-            </div>
-          </div>
-        );
-      };
-
-      const LeaderboardUI = () => (
-        <div className="flex flex-col items-center w-full h-full bg-gradient-to-b from-indigo-500 to-purple-700 p-16 text-white relative">
-          <h2 className="text-[100px] font-black mt-16 mb-16 text-yellow-300 drop-shadow-2xl flex items-center justify-center gap-8 w-full">
-            <ListOrdered className="w-28 h-28" /> SENARAI JUARA
-          </h2>
-
-          <div className="bg-white/10 backdrop-blur-xl p-16 rounded-[4rem] w-full max-w-6xl border-[8px] border-white/30 mb-16 max-h-[60vh] overflow-y-auto custom-scrollbar shadow-2xl">
-            {leaderboardData.length === 0 ? (
-              <p className="text-center text-5xl text-gray-300 italic font-bold">Belum ada rekod permainan.</p>
-            ) : (
-              <table className="w-full text-4xl">
-                <thead>
-                  <tr className="border-b-[8px] border-purple-400 text-purple-200">
-                    <th className="py-8 text-left text-5xl font-black">Ked.</th>
-                    <th className="py-8 text-left text-5xl font-black">Nama</th>
-                    <th className="py-8 text-center text-5xl font-black">Mod</th>
-                    <th className="py-8 text-center text-5xl font-black">Markah</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {leaderboardData.map((rekod, idx) => (
-                    <tr key={idx} className="border-b-[4px] border-purple-400/40 hover:bg-white/10 transition-colors">
-                      <td className="py-8 font-black text-yellow-400 text-6xl">#{idx + 1}</td>
-                      <td className="py-8 font-black text-5xl">{rekod.nama.toUpperCase()}</td>
-                      <td className="py-8 text-center text-4xl font-bold">{rekod.mod === 'ejaan' ? 'EJAAN' : 'BINA AYAT'} ({rekod.tahap})</td>
-                      <td className="py-8 text-center font-black text-green-400 text-6xl flex items-center justify-center gap-3">
-                        {rekod.markah} <Star className="w-12 h-12 fill-green-400 text-green-400"/>
-                      </td>
+            <div className="flex-1 overflow-y-auto custom-scrollbar pr-4">
+              {data.length === 0 ? (
+                <p className="text-center text-4xl text-white/50 italic font-bold mt-12">Belum ada rekod juara.</p>
+              ) : (
+                <table className="w-full text-4xl">
+                  <thead>
+                    <tr className="border-b-[6px] border-white/20 text-white/80">
+                      <th className="py-6 text-left text-4xl font-black w-32">Ked.</th>
+                      <th className="py-6 text-left text-4xl font-black">Nama Juara</th>
+                      <th className="py-6 text-center text-4xl font-black w-48">Markah</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
+                  </thead>
+                  <tbody>
+                    {data.map((rekod, idx) => (
+                      <tr key={idx} className="border-b-[3px] border-white/10 hover:bg-white/20 transition-colors">
+                        <td className="py-6 font-black text-yellow-300 text-5xl">#{idx + 1}</td>
+                        <td className="py-6">
+                          <div className="font-black text-5xl">{rekod.nama.toUpperCase()}</div>
+                          {rekod.tahap && (
+                            <div className="text-2xl text-white/60 mt-1 font-bold">
+                              Tahap: {rekod.tahap.charAt(0).toUpperCase() + rekod.tahap.slice(1)}
+                            </div>
+                          )}
+                        </td>
+                        <td className="py-6 text-center font-black text-green-300 text-5xl flex items-center justify-center gap-2 h-full">
+                          {rekod.markah} <Star className="w-10 h-10 fill-green-300 text-green-300"/>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
           </div>
+        );
 
-          <button onClick={() => setScreen('home')} className="bg-purple-800 hover:bg-purple-900 text-white px-16 py-8 rounded-full text-5xl font-black shadow-[0_10px_0_0_#3b0764] active:shadow-none active:translate-y-3 flex items-center transition-all border-4 border-purple-400">
-            <ChevronLeft className="w-16 h-16 mr-4" /> KEMBALI
-          </button>
-        </div>
-      );
+        return (
+          <div className="flex flex-col items-center w-full h-full bg-gradient-to-b from-indigo-500 to-purple-800 p-12 text-white relative">
+            <h2 className="text-[90px] font-black mt-8 mb-10 text-yellow-300 drop-shadow-2xl flex items-center justify-center gap-8 w-full">
+              <Trophy className="w-24 h-24" /> SENARAI JUARA KESELURUHAN
+            </h2>
+
+            {/* Grid 2 Lajur (Kiri: Ejaan, Kanan: Bina Ayat) */}
+            <div className="flex w-full max-w-[1750px] gap-10 mb-12 h-[60vh]">
+              <TableJuara 
+                data={ejaanData} 
+                tajuk="KUIZ EJAAN" 
+                ikon="🔤" 
+                warnaBorder="border-orange-400/80" 
+                warnaTeks="text-orange-300"
+              />
+              <TableJuara 
+                data={binaAyatData} 
+                tajuk="KUIZ AYAT" 
+                ikon="🧩" 
+                warnaBorder="border-emerald-400/80" 
+                warnaTeks="text-emerald-300"
+              />
+            </div>
+
+            <button onClick={() => setScreen('home')} className="bg-purple-900 hover:bg-purple-950 text-white px-16 py-8 rounded-full text-5xl font-black shadow-[0_10px_0_0_#2e1065] active:shadow-none active:translate-y-3 flex items-center transition-all border-4 border-purple-400">
+              <ChevronLeft className="w-16 h-16 mr-4" /> KEMBALI KE MENU UTAMA
+            </button>
+          </div>
+        );
+      };
 
       return (
         <div className="flex items-center justify-center w-screen h-screen bg-[#111] overflow-hidden m-0 p-0 font-['Fredoka']">
