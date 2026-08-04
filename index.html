@@ -194,24 +194,33 @@
         }
       };
 
-      // Ambil senarai juara
-      const fetchLeaderboardFromDB = async () => {
-        try {
-          const lSnapshot = await db.collection("leaderboard").get();
-          const tempLeaderboard = [];
-          lSnapshot.forEach((doc) => tempLeaderboard.push({ id: doc.id, ...doc.data() }));
-          tempLeaderboard.sort((a, b) => b.markah - a.markah);
-          setLeaderboardData(tempLeaderboard);
-        } catch (error) { console.error("Ralat mengambil senarai juara:", error); }
-      };
-
       useEffect(() => {
+        let unsubscribeLeaderboard;
+
         auth.signInAnonymously()
-          .then(() => { fetchQuestionsFromDB(); fetchLeaderboardFromDB(); })
+          .then(() => { 
+            fetchQuestionsFromDB(); 
+            
+            // Baca data Senarai Juara secara MASA NYATA (Real-time).
+            // Ini membolehkan markah dari kuiz_ejaan.html & Kuiz Bina ayat.html terus masuk ke sini.
+            unsubscribeLeaderboard = db.collection("leaderboard").onSnapshot((snapshot) => {
+              const tempLeaderboard = [];
+              snapshot.forEach((doc) => tempLeaderboard.push({ id: doc.id, ...doc.data() }));
+              tempLeaderboard.sort((a, b) => (b.markah || 0) - (a.markah || 0));
+              setLeaderboardData(tempLeaderboard);
+            }, (error) => {
+              console.error("Ralat onSnapshot senarai juara:", error);
+            });
+          })
           .catch((error) => {
              console.error("Ralat Auth, guna lalai:", error);
              setIsDbLoaded(true);
           });
+
+        // Bersihkan pendengar pangkalan data (memory leak) apabila komponen ditutup
+        return () => {
+          if (unsubscribeLeaderboard) unsubscribeLeaderboard();
+        };
       }, []);
 
       const showToast = (msg) => {
@@ -339,7 +348,7 @@
                 });
              }
           }
-          fetchLeaderboardFromDB(); 
+          // Data akan di-kemaskini secara automatik di papan skor (melalui fungsi onSnapshot)
         } catch (error) { console.error("Ralat menyimpan markah: ", error); }
         setIsSavingScores(false);
       };
@@ -550,9 +559,16 @@
       };
 
       const LeaderboardUI = () => {
-        // Asingkan data mengikut mod permainan dari pangkalan data
-        const ejaanData = leaderboardData.filter(r => r.mod === 'ejaan' || (r.mod && r.mod.toLowerCase().includes('ejaan')));
-        const binaAyatData = leaderboardData.filter(r => r.mod === 'bina_ayat' || (r.mod && r.mod.toLowerCase().includes('ayat')));
+        // Asingkan data mengikut mod permainan dari pangkalan data (Sokongan lebih baik untuk fail luaran)
+        const ejaanData = leaderboardData.filter(r => {
+          const modStr = String(r.mod || r.mode || r.gameMode || "").toLowerCase();
+          return modStr.includes('ejaan');
+        });
+        
+        const binaAyatData = leaderboardData.filter(r => {
+          const modStr = String(r.mod || r.mode || r.gameMode || "").toLowerCase();
+          return modStr.includes('ayat') || modStr.includes('bina');
+        });
 
         // Komponen jadual mini untuk dipaparkan sebelah menyebelah
         const TableJuara = ({ data, tajuk, ikon, warnaBorder, warnaTeks }) => (
